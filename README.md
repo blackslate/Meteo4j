@@ -46,7 +46,25 @@ Start Neo4j
 
 You can now try out Neo4j [in your browser](http://localhost:7474/)
 
-## Installing the Neo4j driver for Meteor
+    Note: Neo4j database should be running before Meteor *
+    
+## Installing Node.js
+
+Pick up the version for your system from the [Node.js web site](http://nodejs.org/download/). Follow the installer instructions.
+
+## Installing Meteor
+
+#### Linux and Mac OS
+
+Run this in Terminal:
+
+    curl https://install.meteor.com/ | sh
+    
+#### Windows
+
+[Download the official Meteor installer here.](https://install.meteor.com/windows)
+
+## Installing the Neo4j NPM Package
 
     $ sudo npm -g install neo4j
     password:
