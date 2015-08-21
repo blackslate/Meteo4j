@@ -27,7 +27,17 @@ You can define patterns of nodes and the way they are linked, and then ask the d
     a            b            h
     name Jill    name Jack    name House
 
-## Installing Neo4j
+## Installing dependencies
+
+You will need:
+
+- Neo4j
+- Node.js
+- Meteor
+- Neo4j NPM Package
+- The Meteo4j demo
+
+### Installing Neo4j
 
 [Download Neo4j community edition](http://neo4j.com/download/)
 
@@ -46,13 +56,13 @@ Start Neo4j
 
 You can now try out Neo4j [in your browser](http://localhost:7474/)
 
-    Note: Neo4j database should be running before Meteor *
+ - **Note: Neo4j database should be running before Meteor**
     
-## Installing Node.js
+### Installing Node.js
 
 Pick up the version for your system from the [Node.js web site](http://nodejs.org/download/). Follow the installer instructions.
 
-## Installing Meteor
+### Installing Meteor
 
 #### Linux and Mac OS
 
@@ -64,7 +74,7 @@ Run this in Terminal:
 
 [Download the official Meteor installer here.](https://install.meteor.com/windows)
 
-## Installing the Neo4j NPM Package
+### Installing the Neo4j NPM Package
 
     $ sudo npm -g install neo4j
     password:
@@ -77,7 +87,7 @@ If you prefer to develop in a non-admin account, you must switch to an account w
     password:
     $ exit # to return to your standard account
 
-## Installing the Meteo4j demo
+### Installing the Meteo4j demo
 
     $ cd /path/to/a/folder/
     $ git clone https://github.com/blackslate/Meteo4j.git .
