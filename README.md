@@ -24,12 +24,13 @@ You can define patterns of nodes and the way they are linked, and then ask the d
     MATCH (a:Person)-[:KNOWS]-(b:Person)-[:BUILT]->(h:House)
     RETURN a,b,h
     
-    *a           b            h
-    name Jill    name Jack    name House*
+    a           b            h
+    name Jill    name Jack    name House
 
 ## Installing Neo4j
 
 [Download Neo4j community edition](http://neo4j.com/download/)
+
 Move it to User's root folder
 
     $ cd /path/to/your/download/folder
@@ -61,6 +62,21 @@ If you prefer to develop in a non-admin account, you must switch to an account w
 ## Installing the Meteo4j demo
 
     $ cd /path/to/a/folder/
-    $ git init
-    $ git clone https://github.com/blackslate/Meteo4j.git
+    $ git clone https://github.com/blackslate/Meteo4j.git .
+    Cloning into ....
+    remote: Counting objects: 18, done.
+    remote: Compressing objects: 100% (14/14), done.
+    remote: Total 18 (delta 1), reused 15 (delta 0), pack-reused 0
+    Unpacking objects: 100% (18/18), done.
+    $ cd app
     $ meteor
+       
+    [[[[[ /Volumes/Mata/Learning/JavaScript/tests/Neo4j/test/app ]]]]]
+    
+    => Started proxy.                             
+    => Started MongoDB.                           
+    => Started your app.                          
+    
+    => App running at: http://localhost:3000/
+
+You can now see the demo in your browser at http://localhost:3000/
