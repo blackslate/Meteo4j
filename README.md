@@ -2,7 +2,7 @@
 
 A barebones demo of how to use a Neo4j graph database in a Meteor project.
 
-The demo uses [dr-dimitru's](https://github.com/dr-dimitru)[Neo4j Reactivity driver for Meteor](https://github.com/VeliovGroup/ostrio-Neo4jreactivity). You will also need to install Neo4j.
+The demo uses the [Neo4j Reactivity driver for Meteor](https://github.com/VeliovGroup/ostrio-Neo4jreactivity) by [dr-dimitru's](https://github.com/dr-dimitru). You will also need to install Neo4j and its npm package, Node.js and Meteor.
 
 ## What's a graph database?
 
@@ -54,7 +54,7 @@ Start Neo4j
     process [6493]... waiting for server to be ready................. OK.
     http://localhost:7474/ is ready.
 
-You can now try out Neo4j [in your browser](http://localhost:7474/)
+You can now try out Neo4j [in your browser](http://localhost:7474/).
 
  - **Note: Neo4j database should be running before Meteor**
     
@@ -107,4 +107,4 @@ If you prefer to develop in a non-admin account, you must switch to an account w
     
     => App running at: http://localhost:3000/
 
-You can now see the demo [in your browser](http://localhost:3000/)
+You can now see the demo [in your browser](http://localhost:3000/).
