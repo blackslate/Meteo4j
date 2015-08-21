@@ -44,7 +44,7 @@ Start Neo4j
     process [6493]... waiting for server to be ready................. OK.
     http://localhost:7474/ is ready.
 
-You can now try out Neo4j in your browser
+You can now try out Neo4j [in your browser](http://localhost:7474/)
 
 ## Installing the Neo4j driver for Meteor
 
@@ -79,4 +79,4 @@ If you prefer to develop in a non-admin account, you must switch to an account w
     
     => App running at: http://localhost:3000/
 
-You can now see the demo in your browser at http://localhost:3000/
+You can now see the demo [in your browser](http://localhost:3000/)
