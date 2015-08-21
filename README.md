@@ -29,21 +29,21 @@ You can define patterns of nodes and the way they are linked, and then ask the d
 
 ## Installing Neo4j
 
-- [Download Neo4j community edition](http://neo4j.com/download/)
-- Move it to User's root folder
+[Download Neo4j community edition](http://neo4j.com/download/)
+Move it to User's root folder
 
     $ cd /path/to/your/download/folder
     $ tar zxvf neo4j-community-2.2.4-unix.tar.gz # unzip the file
     $ mv neo4j-community-2.2.4-unix ~/neo4j  # move it to the root of your user folder
 
-- Start Neo4j
+Start Neo4j
 
     $ ~/neo4j/bin/neo4j start
     Starting Neo4j Server...WARNING: not changing user
     process [6493]... waiting for server to be ready................. OK.
     http://localhost:7474/ is ready.
 
-    # You can now try out Neo4j in your browser
+You can now try out Neo4j in your browser
 
 ## Installing the Neo4j driver for Meteor
 
