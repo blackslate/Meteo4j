@@ -24,7 +24,7 @@ You can define patterns of nodes and the way they are linked, and then ask the d
     MATCH (a:Person)-[:KNOWS]-(b:Person)-[:BUILT]->(h:House)
     RETURN a,b,h
     
-    a           b            h
+    a            b            h
     name Jill    name Jack    name House
 
 ## Installing Neo4j
