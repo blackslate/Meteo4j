@@ -1,10 +1,51 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="utf-8">
+  <title>Meteo4j</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+<div class="sidebar">
+<div class="logo">
+<a href="/"><img src="img/logo.png" alt="Lexogram" /></a>
+</div>
+<nav>
+<h2>Sections</h2>
+<ul>
+<li><a href="#top">Overview</a></li>
+<li><a href="#graph-database">What's a graph database?</a></li>
+<li><a href="#dependencies">Installing dependencies</a>
+<ul>
+<li><a href="#neo4j">Neo4j</a></li>
+<li><a href="#nodejs">Node.js</a></li>
+<li><a href="#meteor">Meteor</a></li>
+<li><a href="#npm-package">Neo4j NPM Package</a></li>
+<li><a href="#meteo4j">Meteo4j</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</nav>
+</div>
+
+<main>
+<header>
 <h1>Meteo4j</h1>
+</header>
+<article>
+<section id="top">
+<p><a href="https://github.com/lexogram/Meteo4j/">Meteo4j</a> is a barebones demo of how to use a Neo4j <em>graph database</em> in a Meteor project. It allows you to create a maze from a series of rooms with one-way doors. Some doors to some rooms are locked. The keys can be found in other rooms.</p>
+<figure>
+<img src="img/map.png" width="200px" alt="A maze with 6 rooms" />
+<figcaption>Figure 1. A maze with 6 rooms</figcaption>
+</figure>
 
-<p>A barebones demo of how to use a Neo4j graph database in a Meteor project.</p>
-
-<p>This demo uses the <a href="https://github.com/VeliovGroup/ostrio-Neo4jreactivity">Neo4j Reactivity driver for Meteor</a> by <a href="https://github.com/dr-dimitru">dr-dimitru's</a>. You will also need to install Neo4j and its npm package, Node.js and Meteor.</p>
-
-<h2><a id="user-content-whats-a-graph-database" class="anchor" href="#whats-a-graph-database" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's a graph database?</h2>
+<p>This demo uses the <a href="https://github.com/VeliovGroup/ostrio-Neo4jreactivity">Neo4j Reactivity driver for Meteor</a> by <a href="https://github.com/dr-dimitru">dr-dimitru</a>. You will also need to install Neo4j and its npm package, Node.js and Meteor.</p>
+</section>
+<section>
+<h2><a id="graph-database" class="anchor" href="#graph-database" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's a graph database?</h2>
 
 <p>A graph database uses nodes, edges and properties to represent and store data <a href="https://en.wikipedia.org/wiki/Graph_database">(Wikipedia)</a>.</p>
 
@@ -29,10 +70,11 @@ RETURN a,b,h
 a            b            h
 name Jill    name Jack    name House
 </code></pre>
+</section>
+<section>
+<h2><a id="dependencies" class="anchor"><span class="octicon octicon-link"></span></a>Installing dependencies</h2>
 
-<h2><a id="user-content-installing-dependencies" class="anchor" href="#installing-dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing dependencies</h2>
-
-<p>You will need:</p>
+<p>To run this demo, you will need:</p>
 
 <ul>
 <li>Neo4j</li>
@@ -42,7 +84,7 @@ name Jill    name Jack    name House
 <li>The Meteo4j demo</li>
 </ul>
 
-<h3><a id="user-content-installing-neo4j" class="anchor" href="#installing-neo4j" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing Neo4j</h3>
+<h3><a id="neo4j" class="anchor"><span class="octicon octicon-link"></span></a>Installing Neo4j</h3>
 
 <p><a href="http://neo4j.com/download/">Download Neo4j community edition</a></p>
 
@@ -67,24 +109,24 @@ http://localhost:7474/ is ready.
 <li><strong>Note: Neo4j database should be running before Meteor</strong></li>
 </ul>
 
-<h3><a id="user-content-installing-nodejs" class="anchor" href="#installing-nodejs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing Node.js</h3>
+<h3><a id="nodejs" class="anchor" href="#nodejs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing Node.js</h3>
 
 <p>Pick up the version for your system from the <a href="http://nodejs.org/download/">Node.js web site</a>. Follow the installer instructions.</p>
 
-<h3><a id="user-content-installing-meteor" class="anchor" href="#installing-meteor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing Meteor</h3>
+<h3><a id="meteor" class="anchor" href="#meteor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing Meteor</h3>
 
-<h4><a id="user-content-linux-and-mac-os" class="anchor" href="#linux-and-mac-os" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux and Mac OS</h4>
+<h4><a id="linux-and-mac-os" class="anchor" href="#linux-and-mac-os" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux and Mac OS</h4>
 
 <p>Run this in Terminal:</p>
 
 <pre><code>curl https://install.meteor.com/ | sh
 </code></pre>
 
-<h4><a id="user-content-windows" class="anchor" href="#windows" aria-hidden="true"><span class="octicon octicon-link"></span></a>Windows</h4>
+<h4><a id="windows" class="anchor"><span class="octicon octicon-link"></span></a>Windows</h4>
 
 <p><a href="https://install.meteor.com/windows">Download the official Meteor installer here.</a></p>
 
-<h3><a id="user-content-installing-the-neo4j-npm-package" class="anchor" href="#installing-the-neo4j-npm-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Neo4j NPM Package</h3>
+<h3><a id="npm-package" class="anchor" href="#npm-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Neo4j NPM Package</h3>
 
 <pre><code>$ sudo npm -g install neo4j
 password:
@@ -99,10 +141,10 @@ password:
 $ exit # to return to your standard account
 </code></pre>
 
-<h3><a id="user-content-installing-the-meteo4j-demo" class="anchor" href="#installing-the-meteo4j-demo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Meteo4j demo</h3>
+<h3><a id="meteo4j" class="anchor" href="#meteo4j" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Meteo4j demo</h3>
 
 <pre><code>$ cd /path/to/a/folder/
-$ git clone https://github.com/blackslate/Meteo4j.git .
+$ git clone https://github.com/lexogram/Meteo4j.git .
 Cloning into ....
 remote: Counting objects: 18, done.
 remote: Compressing objects: 100% (14/14), done.
@@ -120,5 +162,10 @@ $ meteor
 =&gt; App running at: http://localhost:3000/
 </code></pre>
 
-<p>You can now see the demo <a href="http://localhost:3000/">in your browser</a>.</p>
+<p>When you have completed these steps, you should be able to see the demo <a href="http://localhost:3000/">in your browser</a>.</p>
+</section>
+<section>
+</section>
 </article>
+</body>
+</html>
