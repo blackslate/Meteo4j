@@ -1,0 +1,27 @@
+{
+  "name": "Meteo4j",
+  "version": "0.0.1",
+  "description": "Demo for Neo4j and Meteor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blackslate/Meteo4j.git"
+  },
+  "keywords": [
+    "Neo4j",
+    "Meteor",
+    "demo",
+    "maze",
+    "path",
+    "puzzle"
+  ],
+  "author": "James Newton james/at/lexogram/com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blackslate/Meteo4j/issues"
+  },
+  "homepage": "https://github.com/blackslate/Meteo4j"
+}
