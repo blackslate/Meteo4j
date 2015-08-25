@@ -1,3 +1,16 @@
 <body>
-  <h1>The activity will go here</h1>
+  <h1>Meteo4j Maze</h1>
+  {{> rooms}}
 </body>
+
+<template name="rooms">
+  <ul>
+    {{#each rooms}}
+      {{> room}}
+    {{/each}}
+  </ul>
+</template>
+
+<template name="room">
+  <li>{{room}}</li>
+</template>
