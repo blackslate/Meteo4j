@@ -12,7 +12,7 @@
 <a href="/"><img src="img/logo.png" alt="Lexogram" /></a>
 </div>
 <nav>
-<h2>Sections</h2>
+<h2>Running the demo</h2>
 <ul>
 <li><a href="#top">Overview</a></li>
 <li><a href="#graph-database">What's a graph database?</a></li>
@@ -22,11 +22,16 @@
 <li><a href="#nodejs">Node.js</a></li>
 <li><a href="#meteor">Meteor</a></li>
 <li><a href="#npm-package">Neo4j NPM Package</a></li>
+<li><a href="#neo4jreactivity">Neo4j Reactivity</a></li>
+</ul>
+</li>
 <li><a href="#meteo4j">Meteo4j</a></li>
 </ul>
-</li>
+<h2>Building it yourself</h2>
+<ul>
+<li><a href="#create-node">Creating a node</a></li>
+<li></li>
 </ul>
-</li>
 </nav>
 </div>
 
@@ -51,25 +56,25 @@
 
 <p>A mental image: You know people. The people you know, know other people. People do things to things. You can think of each person and thing as a node, and each relationship or action as an edge. People have names, birthdays, interests and other 'properties'. In Neo4j, you create nodes like this: </p>
 
-<pre><code>CREATE (jack:Person {name: "Jack"})
+<pre>CREATE (jack:Person {name: "Jack"})
      , (jill:Person {name: "Jill"})
      , (house:House {name: "House"})
-</code></pre>
+</pre>
 
 <p>The relationships between people have properties too. These relationships are defined using ascii art:</p>
 
-<pre><code>  (jill)-[:KNOWS {since: "childhood"}]-&gt;(jack)
+<pre>  (jill)-[:KNOWS {since: "childhood"}]-&gt;(jack)
 , (jack)-[:BUILT]-&gt;(house)
-</code></pre>
+</pre>
 
 <p>You can define patterns of nodes and the way they are linked, and then ask the database for all the matches for this pattern:</p>
 
-<pre><code>MATCH (a:Person)-[:KNOWS]-(b:Person)-[:BUILT]-&gt;(h:House)
+<pre>MATCH (a:Person)-[:KNOWS]-(b:Person)-[:BUILT]-&gt;(h:House)
 RETURN a,b,h
 
 a            b            h
 name Jill    name Jack    name House
-</code></pre>
+</pre>
 </section>
 <section>
 <h2><a id="dependencies" class="anchor"><span class="octicon octicon-link"></span></a>Installing dependencies</h2>
@@ -90,18 +95,18 @@ name Jill    name Jack    name House
 
 <p>Move it to User's root folder</p>
 
-<pre><code>$ cd /path/to/your/download/folder
+<pre>$ cd /path/to/your/download/folder
 $ tar zxvf neo4j-community-2.2.4-unix.tar.gz # unzip the file
 $ mv neo4j-community-2.2.4-unix ~/neo4j  # move it to the root of your user folder
-</code></pre>
+</pre>
 
 <p>Start Neo4j</p>
 
-<pre><code>$ ~/neo4j/bin/neo4j start
+<pre class="revised"><span class="input">$ ~/neo4j/bin/neo4j start</span>
 Starting Neo4j Server...WARNING: not changing user
 process [6493]... waiting for server to be ready................. OK.
 http://localhost:7474/ is ready.
-</code></pre>
+</pre>
 
 <p>You can now try out Neo4j <a href="http://localhost:7474/">in your browser</a>.</p>
 
@@ -119,8 +124,8 @@ http://localhost:7474/ is ready.
 
 <p>Run this in Terminal:</p>
 
-<pre><code>curl https://install.meteor.com/ | sh
-</code></pre>
+<pre>curl https://install.meteor.com/ | sh
+</pre>
 
 <h4><a id="windows" class="anchor"><span class="octicon octicon-link"></span></a>Windows</h4>
 
@@ -128,30 +133,46 @@ http://localhost:7474/ is ready.
 
 <h3><a id="npm-package" class="anchor" href="#npm-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Neo4j NPM Package</h3>
 
-<pre><code>$ sudo npm -g install neo4j
+<pre class="revised"><span class="input">$ sudo npm -g install neo4j</span>
 password:
-</code></pre>
+</pre>
 
 <p>If you prefer to develop in a non-admin account, you must switch to an account with admin privileges, so that you can install as the root user:</p>
 
-<pre><code>$ su admin # use your own admin account name
+<pre class="revised"><span class="input">$ su admin</span> # use your own admin account name
 password:
-$ sudo npm -g install neo4j
+<span class="input">$ sudo npm -g install neo4j</span>
 password:
-$ exit # to return to your standard account
-</code></pre>
+<span class="input">$ exit</span> # to return to your standard account
+</pre>
+
+
+<h3><a id="neo4jreactivity" class="anchor" href="#neo4jreactivity" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Neo4j Reactivity Package</h3>
+
+<p>Stop meteor if it is running. At the command line, type:</p>
+<pre class="revised"><span class="input">$ meteor add ostrio:neo4jreactivity</span>
+
+Changes to your project's package version selections:
+
+coffeescript                 added, version 1.0.6
+ostrio:minimongo-extensions  added, version 1.0.1
+ostrio:neo4jdriver           added, version 0.2.15
+ostrio:neo4jreactivity       added, version 0.9.0
+sha                          added, version 1.0.3
+
+ostrio:neo4jreactivity: Meteor.js Neo4j database reactivity layer</pre>
 
 <h3><a id="meteo4j" class="anchor" href="#meteo4j" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installing the Meteo4j demo</h3>
 
-<pre><code>$ cd /path/to/a/folder/
-$ git clone https://github.com/lexogram/Meteo4j.git .
+<pre class="revised"><span class="input">$ cd /path/to/a/folder/
+$ git clone https://github.com/lexogram/Meteo4j.git .</span>
 Cloning into ....
 remote: Counting objects: 18, done.
 remote: Compressing objects: 100% (14/14), done.
 remote: Total 18 (delta 1), reused 15 (delta 0), pack-reused 0
 Unpacking objects: 100% (18/18), done.
-$ cd app
-$ meteor
+<span class="input">$ cd app
+$ meteor</span>
 
 [[[[[ /Volumes/Mata/Learning/JavaScript/tests/Neo4j/test/app ]]]]]
 
@@ -160,11 +181,82 @@ $ meteor
 =&gt; Started your app.                          
 
 =&gt; App running at: http://localhost:3000/
-</code></pre>
+</pre>
 
-<p>When you have completed these steps, you should be able to see the demo <a href="http://localhost:3000/">in your browser</a>.</p>
+<p>When you have completed these steps, you should be able to see a demo of the application that you are going to build<a href="http://localhost:3000/">in your browser</a>.</p>
+<p>In the browser console, you can now access <code>Meteor.neo4j</code> and see all its methods and properties.</p>
 </section>
 <section>
+<h1><a id="" class="anchor" href="#" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building the demo yourself</h1>
+<p>The demo that you have just seen gives you preview of what you can do with Neo4j and Meteor. Perhaps it's enough for you to study the code. Perhaps you'd prefer to start with a blank slate and bulid it yourself, learning about Meteor, Neo4j and the Cypher query language as you go.</p>
+<div class="aside git">If you want to build this demo yourself from scratch, you can create a branch of your Git repository, and work on that.
+<pre>git checkout -b startover</pre></div>
+<p>Now delete the following files:</p>
+<ul><code>
+<li>meteo4j.html/</li>
+<li>meteo4j.css</li>
+<li>meteo4j.js</li></code>
+</ul>
+</section>
+<section>
+<h2><a id="create-node" class="anchor" href="#create-node" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a node</h2>
+<p>There are three ways of interacting with Neo4j. Some provide you with <a href="https://meteorhacks.com/introduction-to-latency-compensation">latency compensation</a>. Others act immediately. The easiest way to begin is by using the Meteo.N4JDB object that is created automatically by the ostrio_Neo4jreactivity.js script, part of the Neo4j Reactivity module.</p>
+<p>The Meteo.N4JDB object is only available on the server. It gives a direct connection with the Neo4j database running on the server, where it writes all updates instantly. To test this, create the following script and save it as `meteo4j.js`:</p>
+<pre>if (Meteor.isServer) {
+  <span class="comment">// Check if there are any nodes with the Meteo4J label in the
+  // database, using a standard cypher query</span>
+  var label = "Meteo4j"
+  var cypher = "MATCH (n:" + label + ") RETURN n"
+  var options = null
+  Meteor.N4JDB.query(cypher, options, matchCallback)
+
+  function matchCallback(error, nodeArray) {
+    console.log(error, nodeArray)
+    if (error) {
+      return console.log(error)
+    } 
+
+    <span class="comment">// There are no Meteo4j nodes, create one</span>
+    if (!nodeArray.length) {
+      cypher = "CREATE (n:" + label + " {name: 'hello world'})"
+      Meteor.N4JDB.query(cypher, options, createCallback)
+
+      function createCallback(error, resultArray) { 
+        if (error) {
+          return console.error('New node not created:', error)
+          <span class="comment">// { [Error: ...</span>
+        }
+
+        <span class="comment">//console.log(result) // []
+        
+        // The node is ready to use. See it at...
+        // http://localhost:7474/browser/
+        // ... using the query:
+        // MATCH (n:Meteo4j) RETURN n</span>
+       }
+    }
+  }
+}</pre>
+<p>If your Meteor app is not already running, you can start it like this:</p>
+<pre>$ cd /path/to/Meteo4j/app/
+$ meteor run</pre>
+<p class="aside note">You currently don't have any HTML files to display in the browser, but Meteor will make one for you and fill it with 43 JavaScript files, taking up over 500 KB of bandwidth.</p>
+<p>Look in your command line window. You should see something like this:</p>
+<pre class="revised"><span class="input">$ meteor run</span>
+[[[[[ /Volumes/Mata/Meteo4j/app ]]]]]
+
+=> Started proxy.                             
+=> Started MongoDB.                           
+I20150826-15:10:37.435(-4)? Meteor is successfully connected to Neo4j on http://neo4j:1234@localhost:7474
+=> Started your app.
+
+=> App running at: http://localhost:3000/
+I20150826-15:10:38.362(-4)? null []</pre>
+<p>The last line is the output of the command <code>console.log(error, nodeArray)</code> in the <code>matchCallback</code> method. It tells you that there were no nodes with the label <code>Meteo4j</code> when you first started the app. Now check in the Neo4j browser to see if a node has been created there:</p>
+<figure>
+<img src="img/matchMeteo4j.png" alt="Using the Neo4j browser to check that your node has been created" />
+<figcaption>Figure 2. Using the Neo4j browser to check that your node has been created</figcaption>
+</figure>
 </section>
 </article>
 </body>

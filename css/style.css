@@ -98,7 +98,7 @@ transition: 0.3s;
 }
 
 main {
-background: #fff;
+background: #f8f8ff;
 width: calc(100% - 200px);
 height: 100%;
 position: absolute;
@@ -484,7 +484,8 @@ text-align: left;
 font-style:oblique;
 }
 code{
-background-color: #f0f0f8;
+background-color: #eef;
+padding: 0 0.2em;
 }
 section.optional {
 background-color: #f8f8ff;
@@ -643,6 +644,12 @@ content: "\e805";
 span.new {
 font-weight: bold;
 color: #000;
+}
+span.input {
+color: #000;
+}
+span.comment {
+color: #999;
 }
 .red {
 font-weight: bold;
