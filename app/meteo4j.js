@@ -1,34 +1,37 @@
 
 
 if (Meteor.isServer) {
-  // Check if there are any nodes at all in the database
-  var query = 'MATCH (n) RETURN n'
+  // Check if there are any nodes with the Meteo4J label in the
+  // database, using a standard cypher query
+  var label = "Meteo4j"
+  var cypher = "MATCH (n:" + label + ") RETURN n"
   var options = null
-  Meteor.N4JDB.query(query, options, callback) // output is undefined
-  
-  // The database sends its response to a callback
-  function callback(error, nodeArray) {
-    console.log(error, nodeArray) // JSON.stringify(nodeArray))
-    // null 
-    // [{ n: { db: [Object], _request: [Object], _data: [Object] } }]
+  Meteor.N4JDB.query(cypher, options, matchCallback)
+
+  function matchCallback(error, nodeArray) {
+    console.log(error, nodeArray)
     if (error) {
       return console.log(error)
     } 
 
+    // There are no nodes, create one
     if (!nodeArray.length) {
-      var node = Meteor.N4JDB.createNode({name: 'hello world'})
+      cypher = "CREATE (n:" + label + " {name: 'hello world'})"
+      Meteor.N4JDB.query(cypher, options, createCallback)
 
-      // node is not saved to the database: you must manually save it
-      node.save(function (error, savedNode) { 
+      function createCallback(error, resultArray) { 
         if (error) {
-          return console.error('New node not saved:', error)
+          return console.error('New node not created:', error)
+          // { [Error: Unexpected end of input: expected whitespace, ')' or a relationship pattern...
         }
 
+        //console.log(result) // []
+        
         // The node is ready to use. See it at...
         // http://localhost:7474/browser/
         // ... using the query:
-        // MATCH (n) RETURN n
-       })
+        // MATCH (n:Meteo4j) RETURN n
+       }
     }
   }
 }
