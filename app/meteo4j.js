@@ -1,37 +1,86 @@
 
+var Nodes = Meteor.neo4j.collection("Nodes") // any collection name
+var publishKey = "Meteo4jNodes" // any publish-subscribe name
 
 if (Meteor.isServer) {
-  // Check if there are any nodes with the Meteo4J label in the
-  // database, using a standard cypher query
-  var label = "Meteo4j"
-  var cypher = "MATCH (n:" + label + ") RETURN n"
-  var options = null
-  Meteor.N4JDB.query(cypher, options, matchCallback)
+   var label = "Meteo4j"
+   var matchQuery = "MATCH (node:" + label + ") RETURN node"
+ 
+  ;(function createTheFirstNode(){
+    // Check if there are already any nodes with the Meteo4J label    
+    var options = null
+    Meteor.N4JDB.query(matchQuery, options, matchCallback)
 
-  function matchCallback(error, nodeArray) {
-    console.log(error, nodeArray)
-    if (error) {
-      return console.log(error)
-    } 
+    function matchCallback(error, nodeArray) {
+      console.log(error, nodeArray)
+      if (error) {
+        return console.log(error)
+      } 
 
-    // There are no nodes, create one
-    if (!nodeArray.length) {
-      cypher = "CREATE (n:" + label + " {name: 'hello world'})"
-      Meteor.N4JDB.query(cypher, options, createCallback)
+      // There are no nodes, create one
+      if (!nodeArray.length) {
+        var createQuery = "CREATE (n:" + label + " {name: 'Start'})"
+        Meteor.N4JDB.query(createQuery, options, createCallback)
 
-      function createCallback(error, resultArray) { 
-        if (error) {
-          return console.error('New node not created:', error)
-          // { [Error: Unexpected end of input: expected whitespace, ')' or a relationship pattern...
+        function createCallback(error, resultArray) { 
+          if (error) {
+            return console.error('New node not created:', error)
+          }
         }
+      }
+    }  
+  })()
 
-        //console.log(result) // []
-        
-        // The node is ready to use. See it at...
-        // http://localhost:7474/browser/
-        // ... using the query:
-        // MATCH (n:Meteo4j) RETURN n
-       }
+  Nodes.publish(publishKey, publishQuery, onSubscribe)
+
+  function publishQuery(){
+    return matchQuery
+  }
+
+  function onSubscribe(){
+    console.log("Client subscribed to 'Nodes' collection")
+    var options = null
+    Meteor.N4JDB.query(matchQuery, options, matchCallback)
+
+    function matchCallback (error, result) {
+      // console.log(JSON.stringify(result))
+      // [ { "node": {"_data": { "data" { "name": <string> } } } ]
+      var node
+      var name = (result instanceof Array)
+                 ? result[0]
+                   ? (node = result[0].node, node)
+                     ? node._data
+                       ? node._data.data
+                         ? node._data.data.name
+                         : "no node._data.data"
+                       : "no node._data"
+                     : "result[0] has no 'node' key"
+                   : "result[0] doesn't exist"
+                 : "result is not an array"
+
+      console.log("onSubscribe — error:", error, ", node name:", name)
     }
   }
+}
+
+if (Meteor.isClient) {
+   Tracker.autorun(function autorun(){
+    var options = null // {search: Session.get('searchString')}
+    var link = "node" // object name, to link as MongoDB row(s).
+    Nodes.subscribe(publishKey, options, link)
+  })
+
+  Template.nodes.helpers({
+    nodes: function nodes() {
+      var cursor = Nodes.find()
+      console.log("nodes: ", cursor.count() ? cursor.fetch() : 0)
+      return cursor
+    }
+  })
+
+  Template.node.helpers({
+    label: function label() {
+      return this.metadata.labels[0]
+    }
+  })
 }

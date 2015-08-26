@@ -1,4 +1,17 @@
 
 <body>
-  <h1>Placeholder HTML content</h1>
+  <h1>List of nodes</h1>
+  {{> nodes}}
 </body>
+
+<template name="nodes">
+  <ul>
+    {{#each nodes}}
+      {{> node}}
+    {{/each}}
+  </ul>
+</template>
+
+<template name="node">
+  <li>{{label}}: {{name}}</li>
+</template>
