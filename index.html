@@ -29,7 +29,7 @@
 </ul>
 <h2>Building it yourself</h2>
 <ul>
-<li><a href="#create-node">Hello World: creating a node</a></li>
+<li><a href="#create-node">Creating a node</a></li>
 <li><a href="#subscribe">Publish and subscribe</a></li>
 <li><a href="#template">Showing the nodes</a></li>
 <li></li>
@@ -54,7 +54,7 @@
 <section>
 <h2><a id="graph-database" class="anchor" href="#graph-database" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's a graph database?</h2>
 
-<p>A graph database uses nodes, edges and properties to represent and store data <a href="https://en.wikipedia.org/wiki/Graph_database">(Wikipedia)</a>.</p>
+<p id="dimitru01">A graph database uses nodes, edges and properties to represent and store data <a href="https://en.wikipedia.org/wiki/Graph_database">(Wikipedia)</a>. With a graph database, you can work directly on the relationships between your data objects.</p>
 
 <p>A mental image: You know people. The people you know, know other people. People do things to things. You can think of each person and thing as a node, and each relationship or action as an edge. People have names, birthdays, interests and other 'properties'. In Neo4j, you create nodes like this: </p>
 
@@ -196,15 +196,40 @@ $ meteor</span>
 <pre>git checkout -b startover</pre></div>
 <p>Now delete the following files:</p>
 <ul>
-<code><li>meteo4j.html/</li>
+<code><li>meteo4j.html</li>
 <li>meteo4j.css</li>
 <li>meteo4j.js</li></code>
 </ul>
+<p>I'll show you, step by step, how to:</p>
+<ul>
+<li><a href="#create-node">Create a node and save it to the Neo4j database</a></li>
+<li><a href="#subscribe">Control how the client can read and write to the database</a></li>
+
+
+
+<li><a href=""></a></li>
+<li><a href=""></a></li>
+<li><a href=""></a></li>
+<li><a href=""></a></li>
+<li><a href=""></a></li>
+<li><a href=""></a></li>
+
+
+
+</ul>
+<div class="aside note">This tutorial assumes that you can already:
+<ul>
+<li>Use the command line</li>
+<li>Use your browser's Developer Tools, debugger and JavaScript console</li>
+<li>Use a text editor like <a href="http://www.sublimetext.com/3">Sublime Text</a> to edit your code</li>
+<li>Read and understand JavaScript</li>
+</ul>
+</div>
 </section>
 <section>
-<h2><a id="create-node" class="anchor" href="#create-node" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a node</h2>
+<h2><a id="create-node" class="anchor" href="#create-node" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hello World: creating a node</h2>
 <p>There are three ways of interacting with Neo4j. Some provide you with <a href="https://meteorhacks.com/introduction-to-latency-compensation">latency compensation</a>. Others act immediately. The easiest way to begin is by using the Meteo.N4JDB object that is created automatically by the ostrio_Neo4jreactivity.js script, part of the Neo4j Reactivity module.</p>
-<p>The Meteo.N4JDB object is only available on the server. It gives a direct connection with the Neo4j database running on the server, where it writes all updates instantly. To test this, create the following script and save it as `meteo4j.js`:</p>
+<p id="dimitru02">The Meteor.N4JDB object is only available on the server. It gives a direct connection with the Neo4j database running on the server, where it writes all updates instantly. To test this, create the following script and save it as `meteo4j.js`:</p>
 <pre>if (Meteor.isServer) {
   <span class="comment">// Check if there are any nodes with a Meteo4J label in the
   // database, using a standard cypher query</span>
@@ -243,12 +268,13 @@ $ meteor</span>
 <div class="aside note">In Meteor, by default, all JavaScript code is run both on the server and in the browser. There are two techniques that you can use to make sure a section of your code only runs in one place:
 <ul>
 <li>You can wrap sections of your code in an <code>if (Meteor.isServer) { ... }</code> or an <code>if (Meteor.isClient) { ... }</code>, statement, as you have done here.</li>
-<li>You can create folders at the root of your project called <code>client/</code> and <code>server/</code> and put specific files in each folder.</li>
+<li>You can <a href="http://docs.meteor.com/#/full/structuringyourapp">create folders at the root of your project</a> called <code>client/</code> and <code>server/</code> and put specific files in each folder.</li>
 </ul></div>
 <p>If your Meteor app is not already running, you can start it like this:</p>
 <pre>$ cd /path/to/Meteo4j/app/
 $ meteor run</pre>
-<p class="aside note">You currently don't have any HTML files to display in the browser, but Meteor will make one for you and fill it with 43 JavaScript files, taking up over 500 KB of bandwidth.</p>
+<div class="aside note" id="dimitru03">You currently don't have any HTML files to display in the browser, but Meteor will make one for you and fill it with 43 JavaScript files, taking up over 500 KB of bandwidth. This is quite normal: you are working in development mode, and each separate JavaScript file is sent exactly as it is.
+<p>When you are ready to go live with your application, your can run <code>meteor -- production</code>. All unnecessary libraries will be excluded, all scripts will be minified and concatenated, and the result will be a single file. Depending on how much custom code you write, this may be as small as 107 KB</p></div>
 <p>Look in your command line window. You should see something like this:</p>
 <pre class="revised"><span class="input">$ meteor run</span>
 [[[[[ /Volumes/Mata/Meteo4j/app ]]]]]
@@ -269,7 +295,13 @@ I20150826-15:10:38.362(-4)? null []</pre>
 </section>
 <section>
 <h2><a id="subscribe" class="anchor" href="#subscribe" aria-hidden="true"><span class="octicon octicon-link"></span></a>Publish and subscribe: sharing data with the browser</h2>
-<p>By default, Meteor opens up a security breach. The default<a href="https://atmospherejs.com/meteor/autopublish">autopublish package</a> gives the browser access to all data in the database, and <a href="https://atmospherejs.com/meteor/insecure">insecure package</a> allows anyone who knows how to use the console in their browser to take control of the contents of your database. This is very helpful while you are developing your app, as it allows you, the developer, to do exactly what you want. Before you put your app online, you will want to close this breach. Here's how: at the command line, type:</p>
+<p id="dimitru04">By default, Meteor opens up a security breach. The default <a href="https://atmospherejs.com/meteor/autopublish">autopublish package</a> gives the browser access to all data in the database, and the <a href="https://atmospherejs.com/meteor/insecure">insecure package</a> allows anyone who knows how to use the console in their browser to take control of the contents of your database. This is very helpful while you are developing your app, as it allows you, the developer, to do exactly what you want.</p>
+<p>When you install the Neo4jReactivity package, a JavaScript file is installed at <code>.meteor/local/build/programs/server/packages/ostrio_neo4jreactivity.js</code>  that explicitly uses the <code>publish</code> command (which you will see in a moment). Meteor notices this, and prints a warning in your command line window, recommending that you remove the autopublish module.</p>
+<figure>
+<img src="img/autopublish.png" alt="A warning to remove autopublish" />
+<figcaption>Figure 3. The Neo4jReactivity package is incompatible with autopublish.</figcaption>
+</figure>
+<p>Before you put your app online, you will want to deal with this. Here's how: at the command line, type:</p>
 <pre>$ meteor remove autopublish     
                                               
 <span class="comment">Changes to your project's package version selections:
@@ -284,7 +316,6 @@ $ meteor remove insecure
 insecure  removed from your project           
 
 insecure: removed dependency</span></pre>
-<p>Later, you can use <code>meteor add autopublish</code> and <code>meteor add insecure</code> to make your development environment more comfortable.</p>
 <p>Now that you have broken the automatic link between the server and the client, you need to manually repair it... but just for the data that you want the client to share.</p>
 <h3>Publishing just what's needed</h3>
 <p>To give the browser access to specific data from the database requires three steps:</p>
@@ -311,7 +342,7 @@ insecure: removed dependency</span></pre>
 <ul>
 <li><code>name</code> {<em>String</em>} - Publish/Subscription name</li>
 <li><code>func</code> {<em>Function</em>} - Function which returns Cypher query</li>
-<li><code>onSubscribe</code> {<em>Function</em>} - Callback function called right after data is published</li>
+<li><code>onSubscribe</code> {<em>Function</em>} - Optional callback function called right after data is published</li>
 </ul></li>
 </ul>
 
@@ -333,11 +364,11 @@ insecure: removed dependency</span></pre>
 <pre>users.subscribe('currentUser', {_id: Meteor.uuid()}, 'user')</pre>
 </ul></div>
 
-<div class="aside note">The term <span class="keyword">collection</span> is not entirely accurate. Meteor uses MongoDB as its built-in database, and MongoDB uses <span class="keyword">collections</span> to assemble data documents with a particular structure. Each collection in a MongoDB database has a name.</p>
-<p>Neo4j does not have any feature that resembles a collection, but it is practical to use the same term when referring to the set of data that the server makes public. You can use whatever name you like for the collection set, so long as you use the same name both in the server and in the browser.</p>
-<p>You can publish different sets of data using the same "collection" and different set names. </p></div>
+<div class="aside note" id="dimitru05">The use of the term <span class="keyword">collection</span> reveals how the Neo4j driver depends on the <a href="https://www.meteor.com/mini-databases">minimongo database</a> that runs in the browser.</p>
+<p>Meteor uses <a href="http://docs.mongodb.org/manual/">MongoDB</a> as its built-in database, and MongoDB uses <span class="keyword">collections</span> to assemble data documents with a particular structure. Each collection in a MongoDB database has a name.</p>
+<p>The data set that Neo4j returns from a Cypher query is stored in the browser as a minimongo collection. If you need to work with the results of different Cypher queries, each will need to be stored in a separate collection.</p></div>
 
-<h3>Communication with the client</h3>
+<h3>Communicating with the client</h3>
 
 <p>Below, you will see in <strong>bold</strong> the changes you can make to your <code>meteo4j.js</code> file. The first line creates a variable called <code>Nodes</code> which refers to the collection of data that is to be published.</p>
 <p>Note that I have wrapped most of the code that you used in the first step in an <span class="keyword">immediately-invoked function expressio</span> (IIFE). This is just for tidiness. Most text editors will allow you to collapse a function to a single line, so that your code becomes easier to read. I've also changed the name of the first node from "hello world" to "Start", as this name will be more useful later.</p>
@@ -392,10 +423,10 @@ if (Meteor.isServer) {
 
 <p class="aside info">For more information on the <code>Tracker.autorun( ... )</code> method, you can see the <a href="https://github.com/meteor/meteor/wiki/Tracker-Manual">GitHub documentation for the Tracker library</a>.</p>
 
-<p>In your browser, if you open the Developer Tools and put a debug breakpoint on the line at the end that says <code>onsole.log(Nodes)</code>, you will be able to see how the "Start" node is made available to the JavaScript that runs in the browser.</p>
+<p id="dimitru06">In your browser, if you open the Developer Tools and put a debug breakpoint on the line at the end that says <code>console.log(Nodes)</code>, you will be able to see how the "Start" node is made available to the JavaScript that runs in the browser.</p>
 <figure>
 <img src="img/logNodes.png" alt="Observing the Nodes variable in the browser console" />
-<figcaption>Figure 3. Observing the Nodes variable in the browser console</figcaption>
+<figcaption>Figure 4. Observing the Nodes variable in the browser console</figcaption>
 </figure>
 <p>Note that the key and the <code>_id</code> of the node object ("tRQDqDDk6kE8LW2Ng" in this illustration) may be different every time the application is run, but the <code>metadata.id</code> of the node object will always be the same number.</p>
 </section>
