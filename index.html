@@ -29,7 +29,9 @@
 </ul>
 <h2>Building it yourself</h2>
 <ul>
-<li><a href="#create-node">Creating a node</a></li>
+<li><a href="#create-node">Hello World: creating a node</a></li>
+<li><a href="#subscribe">Publish and subscribe</a></li>
+<li><a href="#template">Showing the nodes</a></li>
 <li></li>
 </ul>
 </nav>
@@ -46,7 +48,7 @@
 <img src="img/map.png" width="200px" alt="A maze with 6 rooms and 3 locked doors" />
 <figcaption>Figure 1. A maze with 6 rooms and 3 locked doors</figcaption>
 </figure>
-
+<p><a href="https://github.com/lexogram/Meteo4j/"><strong>Get the source files from GitHub</strong></a></p>
 <p>This demo uses the <a href="https://github.com/VeliovGroup/ostrio-Neo4jreactivity">Neo4j Reactivity driver for Meteor</a> by <a href="https://github.com/dr-dimitru">Dmitriy Aristarkhovich</a>. You will also need to install Neo4j and its npm package, Node.js and Meteor.</p>
 </section>
 <section>
@@ -69,7 +71,7 @@
 
 <p>You can define patterns of nodes and the way they are linked, and then ask the database for all the matches for this pattern:</p>
 
-<pre>MATCH (a:Person)-[:KNOWS]-(b:Person)-[:BUILT]-&gt;(h:House)
+<pre>MATCH (a:Person)-[:KNOWS]-&gt;(b:Person)-[:BUILT]-&gt;(h:House)
 RETURN a,b,h
 
 a            b            h
@@ -96,15 +98,16 @@ name Jill    name Jack    name House
 <p>Move it to User's root folder</p>
 
 <pre>$ cd /path/to/your/download/folder
-$ tar zxvf neo4j-community-2.2.4-unix.tar.gz # unzip the file
-$ mv neo4j-community-2.2.4-unix ~/neo4j  # move it to the root of your user folder
+$ tar zxvf neo4j-community-2.2.4-unix.tar.gz <span class="comment"># unzip the file</span>
+$ mv neo4j-community-2.2.4-unix ~/neo4j <span class="comment"># move it to the root of
+your user folder</span>
 </pre>
 
 <p>Start Neo4j</p>
 
 <pre class="revised"><span class="input">$ ~/neo4j/bin/neo4j start</span>
 Starting Neo4j Server...WARNING: not changing user
-process [6493]... waiting for server to be ready................. OK.
+process [6493]... waiting for server to be ready.............. OK.
 http://localhost:7474/ is ready.
 </pre>
 
@@ -192,8 +195,8 @@ $ meteor</span>
 <div class="aside git">If you want to build this demo yourself from scratch, you can create a branch of your Git repository, and work on that.
 <pre>git checkout -b startover</pre></div>
 <p>Now delete the following files:</p>
-<ul><code>
-<li>meteo4j.html/</li>
+<ul>
+<code><li>meteo4j.html/</li>
 <li>meteo4j.css</li>
 <li>meteo4j.js</li></code>
 </ul>
@@ -203,12 +206,12 @@ $ meteor</span>
 <p>There are three ways of interacting with Neo4j. Some provide you with <a href="https://meteorhacks.com/introduction-to-latency-compensation">latency compensation</a>. Others act immediately. The easiest way to begin is by using the Meteo.N4JDB object that is created automatically by the ostrio_Neo4jreactivity.js script, part of the Neo4j Reactivity module.</p>
 <p>The Meteo.N4JDB object is only available on the server. It gives a direct connection with the Neo4j database running on the server, where it writes all updates instantly. To test this, create the following script and save it as `meteo4j.js`:</p>
 <pre>if (Meteor.isServer) {
-  <span class="comment">// Check if there are any nodes with the Meteo4J label in the
+  <span class="comment">// Check if there are any nodes with a Meteo4J label in the
   // database, using a standard cypher query</span>
   var label = "Meteo4j"
-  var cypher = "MATCH (n:" + label + ") RETURN n"
+  var matchQuery = "MATCH (n:" + label + ") RETURN n"
   var options = null
-  Meteor.N4JDB.query(cypher, options, matchCallback)
+  Meteor.N4JDB.query(matchQuery, options, matchCallback)
 
   function matchCallback(error, nodeArray) {
     console.log(error, nodeArray)
@@ -218,8 +221,8 @@ $ meteor</span>
 
     <span class="comment">// There are no Meteo4j nodes, create one</span>
     if (!nodeArray.length) {
-      cypher = "CREATE (n:" + label + " {name: 'hello world'})"
-      Meteor.N4JDB.query(cypher, options, createCallback)
+      var createQuery = "CREATE (n:"+ label +" {name: 'Start'})"
+      Meteor.N4JDB.query(createQuery, options, createCallback)
 
       function createCallback(error, resultArray) { 
         if (error) {
@@ -237,6 +240,11 @@ $ meteor</span>
     }
   }
 }</pre>
+<div class="aside note">In Meteor, by default, all JavaScript code is run both on the server and in the browser. There are two techniques that you can use to make sure a section of your code only runs in one place:
+<ul>
+<li>You can wrap sections of your code in an <code>if (Meteor.isServer) { ... }</code> or an <code>if (Meteor.isClient) { ... }</code>, statement, as you have done here.</li>
+<li>You can create folders at the root of your project called <code>client/</code> and <code>server/</code> and put specific files in each folder.</li>
+</ul></div>
 <p>If your Meteor app is not already running, you can start it like this:</p>
 <pre>$ cd /path/to/Meteo4j/app/
 $ meteor run</pre>
@@ -247,7 +255,8 @@ $ meteor run</pre>
 
 => Started proxy.                             
 => Started MongoDB.                           
-I20150826-15:10:37.435(-4)? Meteor is successfully connected to Neo4j on http://neo4j:1234@localhost:7474
+I20150826-15:10:37.435(-4)? Meteor is successfully connected to
+Neo4j on http://neo4j:1234@localhost:7474
 => Started your app.
 
 => App running at: http://localhost:3000/
@@ -257,6 +266,142 @@ I20150826-15:10:38.362(-4)? null []</pre>
 <img src="img/matchMeteo4j.png" alt="Using the Neo4j browser to check that your node has been created" />
 <figcaption>Figure 2. Using the Neo4j browser to check that your node has been created</figcaption>
 </figure>
+</section>
+<section>
+<h2><a id="subscribe" class="anchor" href="#subscribe" aria-hidden="true"><span class="octicon octicon-link"></span></a>Publish and subscribe: sharing data with the browser</h2>
+<p>By default, Meteor opens up a security breach. The default<a href="https://atmospherejs.com/meteor/autopublish">autopublish package</a> gives the browser access to all data in the database, and <a href="https://atmospherejs.com/meteor/insecure">insecure package</a> allows anyone who knows how to use the console in their browser to take control of the contents of your database. This is very helpful while you are developing your app, as it allows you, the developer, to do exactly what you want. Before you put your app online, you will want to close this breach. Here's how: at the command line, type:</p>
+<pre>$ meteor remove autopublish     
+                                              
+<span class="comment">Changes to your project's package version selections:
+                                              
+autopublish  removed from your project        
+
+autopublish: removed dependency</span>           
+$ meteor remove insecure
+                                              
+<span class="comment">Changes to your project's package version selections:
+                                              
+insecure  removed from your project           
+
+insecure: removed dependency</span></pre>
+<p>Later, you can use <code>meteor add autopublish</code> and <code>meteor add insecure</code> to make your development environment more comfortable.</p>
+<p>Now that you have broken the automatic link between the server and the client, you need to manually repair it... but just for the data that you want the client to share.</p>
+<h3>Publishing just what's needed</h3>
+<p>To give the browser access to specific data from the database requires three steps:</p>
+<ul>
+<li>Creating a named collection in both the server and the client (a.k.a. the browser)</li>
+<li>On the server, creating a query to define the data to be <em>publish</em>ed to the client</li>
+<li>In the browser, <em>subscrib</em>ing to the collection that was created by the server.</li>
+</ul>
+
+<div class="aside tip">Here is an edited version of the <a href="https://github.com/VeliovGroup/ostrio-Neo4jreactivity">official documentation</a> for this publish-subscribe feature.
+<p><code>Meteor.neo4j.collection(name)</code></p>
+
+<ul>
+<li><code>name</code> {<em>String</em>} - Name of collection. </li>
+</ul>
+
+<pre>users = Meteor.neo4j.collection('Users')</pre>
+
+<p>This method returns a collection with the following methods:</p>
+
+<ul>
+<li><code>publish(name, func, [onSubscribe])</code> [<strong>Server</strong>] - Publish dataset to client. 
+
+<ul>
+<li><code>name</code> {<em>String</em>} - Publish/Subscription name</li>
+<li><code>func</code> {<em>Function</em>} - Function which returns Cypher query</li>
+<li><code>onSubscribe</code> {<em>Function</em>} - Callback function called right after data is published</li>
+</ul></li>
+</ul>
+
+<pre>users.publish('currentUser', function() {
+  var userID = this._id // this = options sent from subscribe()
+  return 'MATCH (user:User {_id: "'+userID+'"}) RETURN user';
+})</pre>
+
+<ul>
+<li><code>subscribe(name, [options], link)</code> [<strong>Client</strong>] - Subscribe to dataset.
+
+<ul>
+<li><code>name</code> {<em>String</em>} - Publish/Subscription name</li>
+<li><code>options</code> {<em>Object</em>|<em>null</em>} - A map of parameters for the Cypher query</li>
+<li><code>link</code> {<em>String</em>} - Sub object name, to link as MobgoDB row(s).</li>
+</ul></li>
+</ul>
+
+<pre>users.subscribe('currentUser', {_id: Meteor.uuid()}, 'user')</pre>
+</ul></div>
+
+<div class="aside note">The term <span class="keyword">collection</span> is not entirely accurate. Meteor uses MongoDB as its built-in database, and MongoDB uses <span class="keyword">collections</span> to assemble data documents with a particular structure. Each collection in a MongoDB database has a name.</p>
+<p>Neo4j does not have any feature that resembles a collection, but it is practical to use the same term when referring to the set of data that the server makes public. You can use whatever name you like for the collection set, so long as you use the same name both in the server and in the browser.</p>
+<p>You can publish different sets of data using the same "collection" and different set names. </p></div>
+
+<h3>Communication with the client</h3>
+
+<p>Below, you will see in <strong>bold</strong> the changes you can make to your <code>meteo4j.js</code> file. The first line creates a variable called <code>Nodes</code> which refers to the collection of data that is to be published.</p>
+<p>Note that I have wrapped most of the code that you used in the first step in an <span class="keyword">immediately-invoked function expressio</span> (IIFE). This is just for tidiness. Most text editors will allow you to collapse a function to a single line, so that your code becomes easier to read. I've also changed the name of the first node from "hello world" to "Start", as this name will be more useful later.</p>
+
+<pre class="revised"><span class="new">var Nodes = Meteor.neo4j.collection("Nodes")
+var publishKey = "Meteo4jNodes"</span>
+
+if (Meteor.isServer) {
+   var label = "Meteo4j"
+   var matchQuery = "MATCH (node:" + label + ") RETURN node"
+ 
+  <span class="new">;(function createTheFirstNode(){</span>
+    // Check if there are already any nodes with a Meteo4J label
+    var options = null
+    Meteor.N4JDB.query(matchQuery, options, matchCallback)
+
+    function matchCallback(error, nodeArray) {
+      console.log(error, nodeArray)
+      if (error) {
+        return console.log(error)
+      } 
+
+      // There are no nodes, create one
+      if (!nodeArray.length) {
+        var createQuery = "CREATE (n:"+label+" {name: '<span class="new">Start</span>'})"
+        Meteor.N4JDB.query(createQuery, options, createCallback)
+
+        function createCallback(error, resultArray) { 
+          if (error) {
+            return console.error('Node not created:', error)
+          }
+        }
+      }
+    }  
+  <span class="new">})()
+
+  Nodes.publish(publishKey, publishQuery)
+
+  function publishQuery(){
+    return matchQuery
+  }</span>
+}
+
+<span class="new">if (Meteor.isClient) {
+   Tracker.autorun(function autorun(){
+    var options = null
+    var link = "node" // object name, to link as MongoDB row(s).
+    Nodes.subscribe(publishKey, options, link)
+    console.log(Nodes)
+  })
+}</span></pre>
+
+<p class="aside info">For more information on the <code>Tracker.autorun( ... )</code> method, you can see the <a href="https://github.com/meteor/meteor/wiki/Tracker-Manual">GitHub documentation for the Tracker library</a>.</p>
+
+<p>In your browser, if you open the Developer Tools and put a debug breakpoint on the line at the end that says <code>onsole.log(Nodes)</code>, you will be able to see how the "Start" node is made available to the JavaScript that runs in the browser.</p>
+<figure>
+<img src="img/logNodes.png" alt="Observing the Nodes variable in the browser console" />
+<figcaption>Figure 3. Observing the Nodes variable in the browser console</figcaption>
+</figure>
+<p>Note that the key and the <code>_id</code> of the node object ("tRQDqDDk6kE8LW2Ng" in this illustration) may be different every time the application is run, but the <code>metadata.id</code> of the node object will always be the same number.</p>
+</section>
+<section>
+<h2><a id="template" class="anchor" href="#template" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using a Meteor template to show the Neo4j nodes</h2>
+<p></p>
 </section>
 </article>
 </body>
