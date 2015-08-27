@@ -64,16 +64,18 @@ if (Meteor.isServer) {
 }
 
 if (Meteor.isClient) {
-   Tracker.autorun(function autorun(){
-    var options = null // {search: Session.get('searchString')}
+  Tracker.autorun(function trackDataChanges(){
+    var options = null // becomes `this` in the publishQuery() method
     var link = "node" // object name, to link as MongoDB row(s).
-    Nodes.subscribe(publishKey, options, link)
+    var subscription = Nodes.subscribe(publishKey, options, link)
+    console.log("Nodes: ", Nodes)
+    console.log("subscription: ", subscription)
   })
 
-  Template.nodes.helpers({
+  Template.nodeList.helpers({
     nodes: function nodes() {
       var cursor = Nodes.find()
-      console.log("nodes: ", cursor.count() ? cursor.fetch() : 0)
+      console.log("nodes: ", cursor.fetch())
       return cursor
     }
   })
