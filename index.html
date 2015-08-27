@@ -32,6 +32,7 @@
 <li><a href="#create-node">Creating a node</a></li>
 <li><a href="#subscribe">Publish and subscribe</a></li>
 <li><a href="#template">Showing the nodes</a></li>
+<li><a href="#relations">Links between nodes</a></li>
 <li></li>
 </ul>
 </nav>
@@ -49,6 +50,7 @@
 <figcaption>Figure 1. A maze with 6 rooms and 3 locked doors</figcaption>
 </figure>
 <p><a href="https://github.com/lexogram/Meteo4j/"><strong>Get the source files from GitHub</strong></a></p>
+<p><a href="https://gist.github.com/jexp/43c6ee500e6fe97868df"><strong>A Neo4j model with Cypher queries by Michael Hunger</strong></a></p>
 <p>This demo uses the <a href="https://github.com/VeliovGroup/ostrio-Neo4jreactivity">Neo4j Reactivity driver for Meteor</a> by <a href="https://github.com/dr-dimitru">Dmitriy Aristarkhovich</a>. You will also need to install Neo4j and its npm package, Node.js and Meteor.</p>
 </section>
 <section>
@@ -273,8 +275,8 @@ $ meteor</span>
 <p>If your Meteor app is not already running, you can start it like this:</p>
 <pre>$ cd /path/to/Meteo4j/app/
 $ meteor run</pre>
-<div class="aside note" id="dimitru03">You currently don't have any HTML files to display in the browser, but Meteor will make one for you and fill it with 43 JavaScript files, taking up over 500 KB of bandwidth. This is quite normal: you are working in development mode, and each separate JavaScript file is sent exactly as it is.
-<p>When you are ready to go live with your application, your can run <code>meteor -- production</code>. All unnecessary libraries will be excluded, all scripts will be minified and concatenated, and the result will be a single file. Depending on how much custom code you write, this may be as small as 107 KB</p></div>
+<div class="aside note" id="dimitru03">You currently don't have any HTML files to display in the browser, but Meteor will make one for you and fill it with 43 JavaScript files, taking up over 500 KB of bandwidth. This is quite normal: you are working in development mode, and each separate JavaScript file is sent exactly as it is so that everything is easy to debug.
+<p>When you are ready to go live with your application, your can run <code>meteor -- production</code>. All unnecessary libraries will be excluded, all scripts will be minified and concatenated, and the result will be a single file. Depending on how much custom code you write, this may be as small as 107 KB.</p></div>
 <p>Look in your command line window. You should see something like this:</p>
 <pre class="revised"><span class="input">$ meteor run</span>
 [[[[[ /Volumes/Mata/Meteo4j/app ]]]]]
@@ -364,9 +366,11 @@ insecure: removed dependency</span></pre>
 <pre>users.subscribe('currentUser', {_id: Meteor.uuid()}, 'user')</pre>
 </ul></div>
 
-<div class="aside note" id="dimitru05">The use of the term <span class="keyword">collection</span> reveals how the Neo4j driver depends on the <a href="https://www.meteor.com/mini-databases">minimongo database</a> that runs in the browser.</p>
+<div class="aside note" id="dimitru05">The use of the term <span class="keyword">collection</span> reveals how the Neo4j driver depends on the <a href="https://www.meteor.com/mini-databases">minimongo database</a> that runs in the browser. However, this term </p>
 <p>Meteor uses <a href="http://docs.mongodb.org/manual/">MongoDB</a> as its built-in database, and MongoDB uses <span class="keyword">collections</span> to assemble data documents with a particular structure. Each collection in a MongoDB database has a name.</p>
-<p>The data set that Neo4j returns from a Cypher query is stored in the browser as a minimongo collection. If you need to work with the results of different Cypher queries, each will need to be stored in a separate collection.</p></div>
+<p>The data set that Neo4j returns from a Cypher query is stored in the browser as a minimongo collection. If you need to work with the results of different Cypher queries, each will need to be stored in a separate collection.</p>
+<p>The <code>subscribe</code> client-side method returns an object that connects to the results of a particular query, and updates these results every time they change on the server database. You can use the options parameter to customize the query that will be executed by the server when it receives the subscription request.</p>
+<p>For a more complete description of the process, see <a href="http://stackoverflow.com/a/21853298/1927589">Dan Dascalescu's answer on StackOverflow</a>.</p></div>
 
 <h3>Communicating with the client</h3>
 
@@ -413,25 +417,198 @@ if (Meteor.isServer) {
 }
 
 <span class="new">if (Meteor.isClient) {
-   Tracker.autorun(function autorun(){
+   Tracker.autorun(function trackDataChanges(){
     var options = null
     var link = "node" // object name, to link as MongoDB row(s).
-    Nodes.subscribe(publishKey, options, link)
-    console.log(Nodes)
+    var subscription = Nodes.subscribe(publishKey, options, link)
+    console.log("Nodes: ", Nodes)
+    console.log("subscription: ", subscription)
   })
 }</span></pre>
 
+<p><code>Tracker</code> is a tiny module that watches for changes in data, and when it detects such a change, it calls the functions that it has been told are associated with that change. When the web page loads in the browser, Tracker calls the <code>trackDataChanges</code> function a first time, to connect the client in the browser to the data published by the server. Any time the data on the server changes (for example because another connected user made a change that was forwarded to the server), the <code>trackDataChanges</code> function will be called again and the values in the browser's copy of the data will be updated.</p>
 <p class="aside info">For more information on the <code>Tracker.autorun( ... )</code> method, you can see the <a href="https://github.com/meteor/meteor/wiki/Tracker-Manual">GitHub documentation for the Tracker library</a>.</p>
+<<p>No options are required in this particular case, but you could use the options object to tell the Neo4j database on the server to send you all the data for the current user's userID, for example.</p>
 
-<p id="dimitru06">In your browser, if you open the Developer Tools and put a debug breakpoint on the line at the end that says <code>console.log(Nodes)</code>, you will be able to see how the "Start" node is made available to the JavaScript that runs in the browser.</p>
+<p id="dimitru06">In your browser, if you open the Developer Tools and put a debug breakpoint on the line at the end that says <code>console.log("Nodes: ", Nodes)</code>, you will be able to see how the "Start" node is made available to the JavaScript that runs in the browser. You can also look at what the subscription object looks like, and how it stores its customized query.</p>
 <figure>
 <img src="img/logNodes.png" alt="Observing the Nodes variable in the browser console" />
-<figcaption>Figure 4. Observing the Nodes variable in the browser console</figcaption>
+<figcaption>Figure 4. Observing the Nodes variable and the subscription object that it returns</figcaption>
 </figure>
-<p>Note that the key and the <code>_id</code> of the node object ("tRQDqDDk6kE8LW2Ng" in this illustration) may be different every time the application is run, but the <code>metadata.id</code> of the node object will always be the same number.</p>
+<p>Note that the key and the <code>_id</code> of the node object ("cNHeJ7X9eTatJnucz" in this illustration) may be different every time the application is run, but the <code>metadata.id</code> of the node object will always be the same number.</p>
 </section>
 <section>
 <h2><a id="template" class="anchor" href="#template" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using a Meteor template to show the Neo4j nodes</h2>
+<p>So far, you have been looking at output in the Neo4j browser, in the command line window and in the JavaScript console to understand how Neo4j and Meteor are working together. Now you are ready to display data from the Neo4j database in a web page in the browser.</p>
+<div class="aside tip">If you are familiar with Meteor's template system, this next section will be very straightforward. If you are new to Meteor, you might want to do some additional reading:
+<ul>
+<li><a href="http://meteor.github.io/blaze/docs.html">Blaze: Live HTML templates</a></li>
+<li><a href="https://www.discovermeteor.com/blog/a-guide-to-meteor-templates-data-contexts/">Discover Meteor blog</a></li>
+<li><a href="http://docs.meteor.com/#/full/templates_api">Meteor Documentation</a></li>
+</ul>
+</div>
+<h3>Creating an HTML page with templates</h3>
+<p>Create a new HTML document called `meteo4j.html` at the root of your Meteor app folder, and give it this content:</p>
+<pre>&lt;body&gt;
+  &lt;h1&gt;List of nodes&lt;/h1&gt;
+  {{&gt; nodeList}}
+&lt;/body&gt;
+
+&lt;template name="nodeList"&gt;
+  &lt;ul&gt;
+    {{#each nodes}}
+      {{&gt; node}}
+    {{/each}}
+  &lt;/ul&gt;
+&lt;/template&gt;
+
+&lt;template name="node"&gt;
+  &lt;li&gt;{{name}}&lt;/li&gt;
+&lt;/template&gt;</pre>
+<p>If you are new to Meteor, here are some things to note:</p>
+<ul>
+<li>Meteor will automatically created a <code>&lt;head&gt;</code> element for you, so you don't need to include it, nor the opening and closing <code>&lt;html&gt;</code> tags.</li>
+<li>In additon to the <code>&lt;body&gt;</code>, there are also two <code>&lt;template&gt;</code> elements. This is part of the Meteor magic.</li>
+<li>The <code>&lt;body&gt;</code> element contains something that does not look like HTML: <code>{{>&nbsp;nodes}}</code>. The template elements also include these non-HTML curly brackets.</li>
+</ul>
+<h3>Blaze and live templates</h3>
+<p>Meteor uses a <span class="keyword">live page update technology</span> called <a href="https://www.meteor.com/blaze">Blaze</a>, and Blaze uses a <span class="keyword"> templating language</span> called <a href="https://github.com/meteor/meteor/blob/devel/packages/spacebars/README.md">Spacebars</a>. If you have worked with <a href="http://handlebarsjs.com/">Handlebars</a> or <a href="https://github.com/janl/mustache.js/blob/master/README.md">Mustache</a> templates, then this will be something that you are already comfortable with. If not, then you are in for a treat.</p>
+<p>When Meteor renders the page, the Spacebars <code>{{ ... }}</code> blocks will be filled with data that is defined in a JavaScript file. Here's how you can update the client-side part of your <code>meteo4j.js</code> file so that it fills in the blanks:</p>
+<pre class="revised">...
+
+if (Meteor.isClient) {
+  Tracker.autorun(function autorun(){
+    var options = null // becomes `this` in the publishQuery() method
+    var link = "node" // object name, to link as MongoDB row(s).
+    var subscription = Nodes.subscribe(publishKey, options, link)
+    // console.log("Nodes: ", Nodes)
+    // console.log("subscription: ", subscription)
+  })
+
+  <span class="new">Template.nodeList.helpers({
+    nodes: function nodes() {
+      var cursor = Nodes.find()
+      console.log("nodes: ", cursor.fetch())
+      return cursor
+    }
+  })</span>
+}</pre>
+<h3>Inserting a template into the HTML page</h3>
+<p>Note that the HTML page contains three different kinds of Spacebars blocks:</p>
+<h4>Template placements</h4>
+<pre class="revised"><span class="new">{{> </span><em>templateName</em><span class="new">}}</span></pre>
+<h4>Operations</h4>
+<pre class="revised"><span class="new">{{#</span><em>operator valueName</em><span class="new">}}</span>
+  <em>// more stuff</em>
+<span class="new">{{/</span><em>operator</em><span class="new">}}</span></pre>
+<h4>Data placements</h4>
+<pre class="revised"><span class="new">{{</span><em>valueName</em><span class="new">}}</span></pre>
+<br />
+<p>Each has its own particular role.</p>
+<p>A <code class="revised"><span class="new">{{> </span><em>templateName</em><span class="new">}}</span></code> template placement block indicates where a template will be inserted. When the page is rendered, this...</p>
+<pre>&lt;body&gt;
+  &lt;h1&gt;List of nodes&lt;/h1&gt;
+  {{&gt; nodeList}}
+&lt;/body&gt;</pre>
+<p>... will be replaced by the contents of the <code>nodes</code> template, to become this:</p>
+<pre class="revised">&lt;body&gt;
+  &lt;h1&gt;List of nodes&lt;/h1&gt;
+  <span class="new">&lt;ul&gt;
+    {{#each nodes}}
+      {{&gt; node}}
+    {{/each}}
+  &lt;/ul&gt;</span>
+&lt;/body&gt;</pre>
+<p>If <code>nodes</code> refers to a list of four items, then the <code class="revised"><span class="new">{{#each </span><em>node</em><span class="new">}}</span></code> structure will be replaced by four list items:</p>
+<pre class="revised">&lt;body&gt;
+  &lt;h1&gt;List of nodes&lt;/h1&gt;
+  &lt;ul&gt;
+    <span class="new">&lt;li&gt;</span><em>{{name}}</em><span class="new">&lt;/li&gt;
+    &lt;li&gt;</span><em>{{name}}</em><span class="new">&lt;/li&gt;
+    &lt;li&gt;</span><em>{{name}}</em><span class="new">&lt;/li&gt;
+    &lt;li&gt;</span><em>{{name}}</em><span class="new">&lt;/li&gt;</span>
+  &lt;/ul&gt;
+&lt;/body&gt;</pre>
+<p>The actual contents of each list item will be decided by the <code>name</code> property of the different objects stored in the <code>nodes</code> list.</p>
+<h3>Data from a JavaScript template</h3>
+<p>When a <code>&lt;template name="<em class="comment">templateName</em>"&gt;</code> element is defined in an HTML file, Meteor will automatically add an object with the same name to the Meteor Template global. In other words, the presence of <code>&lt;template name="nodeList"&gt;</code> in an HTML file leads to the existence of a JavaScript object at <code>Template.nodeList</code>. This object will have a number of <a href="http://docs.meteor.com/#/full/templates_api">properties and methods</a>, including a <code>helpers</code> method. You can call this method and send it an object with the structure <code>{ <em>key</em>: <em>function</em>, ...}</code>, just like this:</p>
+<pre>Template.nodeList.helpers({
+  nodes: function nodes() {
+    var cursor = Nodes.find()
+    return cursor
+  }
+})</pre>
+<p>Whenever you find <code>{{ nodes}}</code> inside a template called <code>nodeList</code>, the block will be replaced by the result of the call to the <code>nodes</code> function that is defined as one of the <code>nodeList.helpers</code>. In other words, <code>{{#each nodes}}</code> will refer, one by one, to each item returned by a cursor on the Nodes collection that was published by the server as the result of the Cypher call <code>"MATCH (n:Meteo4j) RETURN n"</code> .</p>
+<h3>Mongo cursors</h3>
+<p>So what, exactly, is a cursor in this context? You can discover this by looking at the print-out in the browser console, after the <code>nodes</code> helper has been called.</p>
+<figure>
+<img src="img/nodesCursor.png" alt="Observing the value of Nodes.find()" />
+<figcaption>Figure 5. Observing the value of <code>Nodes.find()</code></figcaption>
+</figure>
+<p>The <code>Nodes</code> object is a Mongo collection, and it can respond to <a href="http://docs.mongodb.org/manual/reference/method/js-collection/">all the Mongo methods</a> such as <code>find()</code>. Calling the <code>find()</code> method returns a <a href="http://docs.mongodb.org/manual/core/cursors/"><span class="keyword">cursor</span></a>. This is an object that can step through all the results of the database query, one by one. The <code>{{#each nodes}}</code> operation in the HTML template is what makes it move to the next result and display it.</p>
+<p>You may notice that the <code>nodes</code> helper function is called twice. The first time, the query returned no nodes. If you put a debug breakpoint inside the <code>nodes</code> function, you will see that the first call came immediately after Tracker.autorun set up the subscription, and before the server had had time to tell the browser about the data that it contains.</p>
+<p>The second time that the <code>nodes</code> helper function was called was when the web page wase rendering and the <code>nodeList</code> template needed to find the values it has to display. The second time, connection between the physical database on the server and the <code>Nodes</code> collection in the browser has been made, and information about the node that you created in the first section is now available.</p>
+<h3>Displaying metadata</h3>
+<p>For now, you only have one node to display, and its name is "Start". You also gave it a label of "Meteo4j". The <code>name</code> is a direct property of the node object itself, so the HTML template can access it through the Spacebars block <code>{{name}}</code>.</p>
+<p>However, the node's <code>id</code> and <code>labels</code> are stored in its <code>metadata</code> property. To be able to display these values, you will need to create a second helper function.</p>
+<pre class="revised">...
+if (Meteor.isClient) {
+  Tracker.autorun(function trackDataChanges(){
+    var options = null // becomes `this` in the publishQuery() method
+    var link = "node" // object name, to link as MongoDB row(s).
+    var subscription = Nodes.subscribe(publishKey, options, link)
+    console.log("Nodes: ", Nodes)
+    console.log("subscription: ", subscription)
+  })
+
+  Template.nodeList.helpers({
+    nodes: function nodes() {
+      var cursor = Nodes.find()
+      console.log("nodes: ", cursor.fetch())
+      return cursor
+    }
+  })
+
+  <span class="new">Template.node.helpers({
+    label: function label() {
+      return this.metadata.labels[0]</span> // assumes labels exists
+    <span class="new">}
+  })</span>
+}</pre>
+<p>Now you can add a new Spacebars block to the <code>node</code> template in your <code>meteo4j.html</code> file:</p>
+<pre class="revised">&lt;body&gt;
+  &lt;h1&gt;List of nodes&lt;/h1&gt;
+  {{&gt; nodeList}}
+&lt;/body&gt;
+
+&lt;template name="nodeList"&gt;
+  &lt;ul&gt;
+    {{#each nodes}}
+      {{&gt; node}}
+    {{/each}}
+  &lt;/ul&gt;
+&lt;/template&gt;
+
+&lt;template name="node"&gt;
+  &lt;li&gt;<span class="new">{{label}}: </span>{{name}}&lt;/li&gt;
+&lt;/template&gt;</pre>
+<p class="aside note">In the context of the Template function, the keyword <code>this</code> refers to the current element that is being treated.</p>
+<p>If all went well, your web page should now look like this:</p>
+<figure>
+<img src="img/listOfNodes.png" alt="Displaying your first node in the browser" />
+<figcaption>Figure 6. Displaying your first node in the browser</figcaption>
+</figure>
+<div class="aside tip">If you are new to Meteor, check that you can follow the patterns that match these items together:
+<ul>
+ <li>The <code class="revised"><span class="new">{{>&nbsp;</span><em>templateName</em><span class="new">}}</span></code> blocks</li>
+ <li>The <code>&lt;template name="<em>templateName</em>" &gt;</code> elements in the HTML files</li>
+ <li>The <code>Template.<em>templateName</em>.helpers( ... )</code> functions in the JavaScript files</li> 
+ </ul>
+ <p>Check also the matches between the terms inside Spacebars blocks in the HTML and the names of the <code>helper</code> functions in the JavaScript.</p></div>
+<p class="aside disrupt">To see if you have understood, make a small modification to both the HTML file and the JavaScript file, so that it shows the <code>id</code> of the "Start" node, rather than its label.</p>
+</section>
+<section>
+<h2><a id="relations" class="anchor" href="#relations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating links between nodes</h2>
 <p></p>
 </section>
 </article>
