@@ -1,17 +1,158 @@
 
 <body>
-  <h1>List of nodes</h1>
-  {{> nodeList}}
+  {{> roomList}}
+  {{> doorList}}
+
+  <!--h1>List of doors</h1>
+  <ul>
+    <li><span>The door from </span>
+    <select>
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select><span> to </span>
+    <select>
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select><span> is </span>
+    <input type="checkbox" checked id="door1" />
+      <label for="door1">locked</label>.
+      <span>The key is in </span>
+      <select>
+        <option value="Room 1">Room 1</option>
+        <option value="Room 2">Room 2</option>
+        <option value="Room 3">Room 3</option>
+      </select><span>.</span>
+      <button type="button" id="deleteDoor1">&times;</button>
+      <label for="deleteDoor1">Delete</label>.
+    </li>
+
+    <li><span>The door from </span>
+      <select>
+        <option value="Room 1">Room 1</option>
+        <option value="Room 2">Room 2</option>
+        <option value="Room 3">Room 3</option>
+      </select><span> to </span>
+      <select>
+        <option value="Room 1">Room 1</option>
+        <option value="Room 2">Room 2</option>
+        <option value="Room 3">Room 3</option>
+      </select><span> is </span>
+      <input type="checkbox" checked id="door2" />
+      <label for="door2">locked</label>.
+      <span>The key is in </span>
+      <select>
+        <option value="Room 1">Room 1</option>
+        <option value="Room 2">Room 2</option>
+        <option value="Room 3">Room 3</option>
+      </select><span>.</span>
+      <button type="button" id="deleteDoor2">&times;</button>
+      <label for="deleteDoor2">Delete</label>.
+    </li>
+  </ul-->
+  
+  <hr>
+
+  <h1>Traversal</h1>
+  <p>You are in <span>Room 1</span></p>
+  <p>You have keys to <span>Room 2 and Room 3</span></p>
+  <p>You can go to <button type="button">Room 2</button> or <button type="button">Room 3</button></p>
+
+  <hr>
+
+  <h1>Query</h1>
+  <p><span>Starting from </span>
+  <select>
+    <option value="Room 1">Room 1</option>
+    <option value="Room 2">Room 2</option>
+    <option value="Room 3">Room 3</option>
+  </select><span>, with the keys to </span>
+  <select multiple>
+    <option value="Room 1">Room 1</option>
+    <option value="Room 2">Room 2</option>
+    <option value="Room 3">Room 3</option>
+  </select><span>, can you get to </span>
+  <select>
+    <option value="Room 1">Room 1</option>
+    <option value="Room 2">Room 2</option>
+    <option value="Room 3">Room 3</option>
+  </select><span>?</span>
+  <button type="button">Check</button></p>
+
+  <hr>
+  
+  <!--h3>Add a Room</h3>
+  <div class="details">
+    <input class="input addRoom" id="newRoomName" placeholder="Type name here"> 
+    <button class="button" id="addRoom">Add Room</button>
+  </div-->
+  {{> addRoom}}
+
+  <h3>Add a Door</h3>
+  <div class="details">
+    From: 
+    <select>
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select>
+    To: 
+    <select>
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select>
+    Door is
+    <input type="checkbox" checked id="door1" />
+    <label for="door1">locked</label>.
+    <span>The key is in </span>
+    <select>
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select><span>.</span>
+
+    <button class="button" id="addRoom">Add Door</button>
+  </div>
 </body>
 
-<template name="nodeList">
+<template name="roomList">
+  <h1>List of rooms</h1>
   <ul>
-    {{#each nodes}}
-      {{> node}}
-    {{/each}}
+  {{#each rooms}}
+    {{> room}}
+  {{/each}}
   </ul>
 </template>
 
-<template name="node">
-  <li>{{label}}: {{name}}</li>
+<template name="room">
+  <li>
+    <p>{{name}}
+    <button type="button" id="deleteRoom{{id}}">&times;</button>
+    <label for="deleteRoom{{id}}">Delete</label></p>
+  </li>
+</template>
+
+<template name="doorList">
+  <h1>List of doors</h1>
+  <ul>
+  {{#each doors}}
+    {{> door}}
+  {{/each}}
+  </ul>
+</template>
+
+<template name="door">
+  <li>
+    {{name}}
+  </li>
+</template>
+
+<template name="addRoom">
+  <h3>Add a Room</h3>
+  <div class="details">
+    <input class="input addRoom" id="newRoomName" placeholder="Type name here"> 
+    <button class="button" id="addRoom">Add Room</button>
+  </div>
 </template>
