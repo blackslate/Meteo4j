@@ -88,33 +88,7 @@
     <button class="button" id="addRoom">Add Room</button>
   </div-->
   {{> addRoom}}
-
-  <h3>Add a Door</h3>
-  <div class="details">
-    From: 
-    <select>
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
-    </select>
-    To: 
-    <select>
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
-    </select>
-    Door is
-    <input type="checkbox" checked id="door1" />
-    <label for="door1">locked</label>.
-    <span>The key is in </span>
-    <select>
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
-    </select><span>.</span>
-
-    <button class="button" id="addRoom">Add Door</button>
-  </div>
+  {{> addDoor}}
 </body>
 
 <template name="roomList">
@@ -154,5 +128,34 @@
   <div class="details">
     <input class="input addRoom" id="newRoomName" placeholder="Type name here"> 
     <button class="button" id="addRoom">Add Room</button>
+  </div>
+</template>
+
+<template name="addDoor">
+  <h3>Add a Door</h3>
+  <div class="details">
+    From: 
+    <select id="fromRoomName">
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select>
+    To: 
+    <select id="toRoomName">
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select>
+    Door is
+    <input type="checkbox" checked id="locked" />
+    <label for="locked">locked</label>.
+    <span>The key is in </span>
+    <select id="keyRoomName">
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select><span>.</span>
+
+    <button class="button" id="addDoor">Add Door</button>
   </div>
 </template>
