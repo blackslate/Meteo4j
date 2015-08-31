@@ -3,7 +3,7 @@ var Rooms = Meteor.neo4j.collection("Rooms") // any collection name
 var roomKey = "Rooms" // any publish-subscribe name
 
 if (Meteor.isServer) {
-  var roomQuery = "MATCH (room:Room)-[door:DOOR]->() RETURN room, door"
+  var roomQuery = "MATCH (room:Room) RETURN room"
   Rooms.publish(roomKey, publishRoomQuery)
 
   function publishRoomQuery(){
@@ -14,7 +14,7 @@ if (Meteor.isServer) {
 if (Meteor.isClient) {
   Tracker.autorun(function trackDataChanges(){
     var options = null // becomes `this` in the publishRoomQuery() method
-    var link = "door" // object name, to link as MongoDB row(s).
+    var link = "room" // object name, to link as MongoDB row(s).
     var subscription = Rooms.subscribe(roomKey, options, link)
     console.log("Rooms: ", Rooms)
     console.log("subscription: ", subscription)
