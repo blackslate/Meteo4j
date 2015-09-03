@@ -50,7 +50,7 @@
       <button type="button" id="deleteDoor2">&times;</button>
       <label for="deleteDoor2">Delete</label>.
     </li>
-  </ul-->
+  </ul>
   
   <hr>
 
@@ -82,7 +82,7 @@
 
   <hr>
   
-  <!--h3>Add a Room</h3>
+  <h3>Add a Room</h3>
   <div class="details">
     <input class="input addRoom" id="newRoomName" placeholder="Type name here"> 
     <button class="button" id="addRoom">Add Room</button>
@@ -134,28 +134,40 @@
 <template name="addDoor">
   <h3>Add a Door</h3>
   <div class="details">
-    From: 
+    From:
     <select id="fromRoomName">
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
+      {{#each fromRooms}}
+        {{> fromRoom}}
+      {{/each}}
     </select>
     To: 
     <select id="toRoomName">
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
+      {{#each toRooms}}
+        {{> toRoom}}
+      {{/each}}
     </select>
     Door is
     <input type="checkbox" checked id="locked" />
     <label for="locked">locked</label>.
     <span>The key is in </span>
     <select id="keyRoomName">
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
+      {{#each keyRooms}}
+        {{> keyRoom}}
+      {{/each}}
     </select><span>.</span>
 
     <button class="button" id="addDoor">Add Door</button>
   </div>
+</template>
+
+<template name="fromRoom">
+  <option value="{{name}}">{{name}}</option>
+</template>
+
+<template name="toRoom">
+  <option value="{{name}}">{{name}}</option>
+</template>
+
+<template name="keyRoom">
+  <option value="{{name}}">{{name}}</option>
 </template>
