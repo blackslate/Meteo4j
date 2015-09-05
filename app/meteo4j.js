@@ -9,9 +9,8 @@ var queries = {
     collection: Meteor.neo4j.collection("RoomsWithDoors")
   , query:
       "MATCH (entrance:Room)-[door:DOOR]->(exit:Room) " +
-      "WHERE NOT (entrance)-[:DOOR]->(exit) " +
-      "RETURN entrance;" 
-  , link: "entrance"
+      "RETURN exit;" 
+  , link: "exit"
   }
 , "roomsForNewDoors": {
     collection: Meteor.neo4j.collection("RoomsForNewDoors")
@@ -19,21 +18,23 @@ var queries = {
      "MATCH (entrance:Room), (exit:Room) " +
      "WHERE NOT (entrance)-[:DOOR]->(exit) " +
      "AND entrance <> exit " +
-     "RETURN entrance"
+     "RETURN entrance" // "RETURN DISTINCT entrance" fails silently
   , link: "entrance"
   }
 , "newDoorsForRoom": {
     collection: Meteor.neo4j.collection("NewDoorsForRoom")
   , query: 
       "MATCH (entrance:Room), (exit:Room) " +
-      "WHERE entrance.name = '{name}' " +
+      "WHERE entrance.name = {name} " +
       "AND NOT (entrance)-[:DOOR]->(exit) " +
       "AND entrance <> exit " +
       "RETURN exit"
-  , options: {name: "Room 2"}
+  , options: {name: "Room A"}
   , link: "exit"
   }
 }
+
+
 
 
 if (Meteor.isServer) {
@@ -67,10 +68,11 @@ if (Meteor.isClient) {
       var options = queryData.options
       var link = queryData.link
       var collection = queryData.collection
+      console.log(key, options, link)
       var subscription = collection.subscribe(key, options, link)
     
-      // console.log(key + ": ", collection)
-      // console.log("subscription: ", subscription)
+      console.log(key + ": ", collection)
+      console.log("subscription: ", subscription)
     }
   })
 
@@ -115,16 +117,6 @@ if (Meteor.isClient) {
     }
   })
 
-  Template.addDoor.helpers({
-    fromRooms: function() {
-      return getResults(queries.roomsForNewDoors)
-    }
-  , toRooms: getNewDoorsForRoom // See below
-  , keyRooms: function () {
-      return ["a", "b"]
-    }
-  })
-
   Template.addDoor.events({
     'click #addDoor': function () {
       var $from = $('#fromRoomName')
@@ -156,7 +148,7 @@ if (Meteor.isClient) {
       }
 
       function doorAdded(error, data){
-        //console.log("doorAdded: ", error, data)
+        console.log("doorAdded: ", error, data)
         // { door: [ {
         //     lock: "Room 2"
         //   , metadata: {
@@ -190,32 +182,29 @@ if (Meteor.isClient) {
         // }
       }
     }
-  })
 
-  Template.addDoor.events({
-    'change #fromRoomName': function () {
+  , 'change #fromRoomName': function () {
       var fromRoomId = $("#fromRoomName :selected").text()
       Session.set("fromRoomId", fromRoomId)
     }
   })
 
-  function getNewDoorsForRoom() {
-  //   var collection = Meteor.neo4j.collection("NewDoorsForRoom")
-  //   var query =
-  //     "MATCH (entrance:Room), (exit:Room) " +
-  //     "WHERE entrance.name = '{name}' " +
-  //     "AND (entrance)-[:DOOR]->(exit) " +
-  //     "AND entrance <> exit" +
-  //     "RETURN exit"
-  // , options: {name: "Room 2"}
-  // , link: "room"
-    var key = "newDoorsForRoom"
-    var queryData = queries[key]
-    var options = { name: Session.get("fromRoomId") }
-    var link = queryData.link
-    var collection = queryData.collection
-    var subscription = collection.subscribe(key, options, link)
-    var results = getResults(queryData)
-    return results
-  }
+  Template.addDoor.helpers({
+    fromRooms: function() {
+      var results = getResults(queries.roomsForNewDoors)
+      return results
+    }
+
+  , toRooms: function () {
+      var key = "newDoorsForRoom"
+      var queryData = queries[key]
+      var options = { name: Session.get("fromRoomId") }
+      var link = queryData.link
+      var collection = queryData.collection
+      collection.subscribe(key, options, link)
+
+      var results = getResults(queryData)
+      return results
+    }
+  })
 }

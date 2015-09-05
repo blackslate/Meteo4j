@@ -103,8 +103,8 @@
 <template name="room">
   <li>
     <p>{{name}}
-    <button type="button" id="deleteRoom{{id}}">&times;</button>
-    <label for="deleteRoom{{id}}">Delete</label></p>
+    <!--button type="button" id="deleteRoom{{id}}">&times;</button>
+    <label for="deleteRoom{{id}}">Delete</label--></p>
   </li>
 </template>
 
@@ -133,31 +133,31 @@
 
 <template name="addDoor">
   <h3>Add a Door</h3>
-  <div class="details">
-    From:
+    <p>From: 
     <select id="fromRoomName">
       {{#each fromRooms}}
         {{> fromRoom}}
       {{/each}}
     </select>
-    To: 
+
+    to: 
     <select id="toRoomName">
       {{#each toRooms}}
         {{> toRoom}}
       {{/each}}
-    </select>
+    </select>.
     Door is
     <input type="checkbox" checked id="locked" />
     <label for="locked">locked</label>.
     <span>The key is in </span>
     <select id="keyRoomName">
-      {{#each keyRooms}}
-        {{> keyRoom}}
-      {{/each}}
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
     </select><span>.</span>
 
     <button class="button" id="addDoor">Add Door</button>
-  </div>
+    </p>
 </template>
 
 <template name="fromRoom">
@@ -168,6 +168,31 @@
   <option value="{{name}}">{{name}}</option>
 </template>
 
-<template name="keyRoom">
-  <option value="{{name}}">{{name}}</option>
-</template>
+<!--template name="addDoor">
+  <h3>Add a Door</h3>
+  <div class="details">
+    From: 
+    <select id="fromRoomName">
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select>
+    To: 
+    <select id="toRoomName">
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select>
+    Door is
+    <input type="checkbox" checked id="locked" />
+    <label for="locked">locked</label>.
+    <span>The key is in </span>
+    <select id="keyRoomName">
+      <option value="Room 1">Room 1</option>
+      <option value="Room 2">Room 2</option>
+      <option value="Room 3">Room 3</option>
+    </select><span>.</span>
+
+    <button class="button" id="addDoor">Add Door</button>
+  </div>
+</template-->
