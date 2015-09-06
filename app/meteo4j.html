@@ -1,9 +1,9 @@
 
 <body>
   {{> roomList}}
-  {{> doorList}}
+  <!--{{> doorList}}
 
-  <!--h1>List of doors</h1>
+  <h1>List of doors</h1>
   <ul>
     <li><span>The door from </span>
     <select>
@@ -132,32 +132,36 @@
 </template>
 
 <template name="addDoor">
-  <h3>Add a Door</h3>
-    <p>From: 
+  {{#if doorableRooms}}
+    <h3>Add a Door</h3>
+
+    <p> From: 
     <select id="fromRoomName">
       {{#each fromRooms}}
         {{> fromRoom}}
       {{/each}}
     </select>
-
-    to: 
+    To: 
     <select id="toRoomName">
       {{#each toRooms}}
         {{> toRoom}}
       {{/each}}
     </select>.
     Door is
-    <input type="checkbox" checked id="locked" />
-    <label for="locked">locked</label>.
-    <span>The key is in </span>
-    <select id="keyRoomName">
-      <option value="Room 1">Room 1</option>
-      <option value="Room 2">Room 2</option>
-      <option value="Room 3">Room 3</option>
-    </select><span>.</span>
+    <input type="checkbox" id="locked" />
+    <label for="locked">{{locked}}</label>.
+    {{#if isLocked}}
+      <span>The key is in </span>
+      <select id="keyRoomName">
+        {{#each keyRooms}}
+          {{> keyRoom}}
+        {{/each}}
+      </select><span>.</span>
+    {{/if}}
 
     <button class="button" id="addDoor">Add Door</button>
     </p>
+  {{/if}}
 </template>
 
 <template name="fromRoom">
@@ -165,6 +169,10 @@
 </template>
 
 <template name="toRoom">
+  <option value="{{name}}">{{name}}</option>
+</template>
+
+<template name="keyRoom">
   <option value="{{name}}">{{name}}</option>
 </template>
 
