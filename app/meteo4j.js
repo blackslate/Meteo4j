@@ -13,17 +13,6 @@ var queries = {
       "ORDER BY entrance.name" 
   , link: "exit"
   }
-, "roomThatCouldUseADoor": {
-    collection: Meteor.neo4j.collection("RoomThatCouldUseADoor")
-  , query: 
-      "MATCH (entrance:Room), (exit:Room) " +
-      "WHERE entrance <> exit " +
-      "AND NOT (entrance)-[:DOOR]->(exit) " +
-      "RETURN DISTINCT entrance " +
-      "ORDER BY entrance.name " +
-      "LIMIT 1"
-  , link: "entrance"
-  }
 , "roomsForNewDoors": {
     collection: Meteor.neo4j.collection("RoomsForNewDoors")
   , query: 
@@ -46,6 +35,30 @@ var queries = {
   , options: {fromRoomId: "Room A"}
   , link: "exit"
   }
+, "addDoor": {
+    collection: Meteor.neo4j.collection("CreateNewDoor")
+  , query: 
+      "MATCH (entrance:Room), (exit:Room) " +
+      "WHERE entrance.name = {fromRoomId} " +
+      "AND exit.name = {toRoomId}  " +
+      "CREATE entrance-[door:DOOR]->exit " +
+      "RETURN door" 
+  , options: { fromRoomId: "Room A", toRoomId: "Room B" }
+  , link: "door"
+  }
+// , "lockDoor": {
+//     collection: Meteor.neo4j.collection("LockDoor")
+//   , query: 
+//       "MATCH ()-[door:DOOR]-() " +
+//           ", (room:Room)" +
+//       "WHERE door._id = {_id} " +
+//       "AND room.name = {keyRoom}  " //+
+//       // "CREATE entrance-[door:DOOR]-exit " +
+//       // "RETURN door" 
+//       // Set lock on door, place key in room //
+//   , options: { _id: 1, keyRoom2: "Room A" }
+//   , link: "door"
+// }
 }
 
 
@@ -70,6 +83,16 @@ if (Meteor.isServer) {
       }
     }
   })()
+
+
+  Meteor.neo4j.methods({
+    'addDoor': function(){
+      var queryData = queries.addDoor
+      var query = queryData.query
+      console.log(query, this)
+      return query
+    }
+  });
 }
 
 if (Meteor.isClient) {
@@ -89,7 +112,7 @@ if (Meteor.isClient) {
     }
   })
 
-  function getResults(queryData) {
+  function getResult(queryData) {
     var collection = queryData.collection
     var cursor = collection.find()
     var order = queryData.sort
@@ -103,13 +126,13 @@ if (Meteor.isClient) {
 
   Template.roomList.helpers({
     rooms: function rooms() {
-      return getResults(queries.allRooms)
+      return getResult(queries.allRooms)
     }
   })
 
   Template.doorList.helpers({
     doors: function doors() {
-      return getResults(queries.roomsWithDoors)
+      return getResult(queries.roomsWithDoors)
     }
   })
 
@@ -133,6 +156,10 @@ if (Meteor.isClient) {
   Template.addDoor.onRendered (function () {
     var fromRoomId = $("#fromRoomName :selected").text()
     Session.set("fromRoomId", fromRoomId)
+    var toRoomId = $("#toRoomName :selected").text()
+    Session.set("toRoomId", toRoomId)
+
+    console.log("addDoor rendered", fromRoomId, toRoomId)
   })
 
   Template.addDoor.events({
@@ -203,26 +230,45 @@ if (Meteor.isClient) {
 
   , 'change #fromRoomName': function () {
       var fromRoomId = $("#fromRoomName :selected").text()
-      console.log("Change:", fromRoomId)
+      console.log("From:", fromRoomId)
       Session.set("fromRoomId", fromRoomId)
+    }
+
+ , 'change #toRoomName': function () {
+      var toRoomId = $("#toRoomName :selected").text()
+      console.log("To:", toRoomId)
+      Session.set("toRoomId", toRoomId)
     }
 
   , 'change #locked': function (event) {
       Session.set("locked", event.currentTarget.checked)
     }
+
+  , 'click #addDoor': function (event) {
+      var options = {}
+      options.fromRoomId = Session.get("fromRoomId")
+      options.toRoomId = Session.get("toRoomId")
+      options.keyRoom = Session.get("keyRoom")
+      Meteor.neo4j.call('addDoor', options);
+    }
   })
 
   Template.addDoor.helpers({
     fromRooms: function() {
-      var results = getResults(queries.roomsForNewDoors)
+      // Get a list of rooms not already linked to every other room
+      var result = getResult(queries.roomsForNewDoors)
+
+      // If fromRoomId is not already set, set it to the first
+      // available door. It will be reset each time the value of the 
+      // #fromRoomName select element is changed.
       if (!Session.get("fromRoomId").length) {
-        var fetched = results.fetch()
+        var fetched = result.fetch()
         if (fetched.length > 0) {
           Session.set("fromRoomId", fetched[0].name)
         }
       }
-      //console.log("From:",results.fetch())
-      return results
+      //console.log("From:",result.fetch())
+      return result
     }
 
   , toRooms: function () {
@@ -235,13 +281,24 @@ if (Meteor.isClient) {
       // again.
       collection.subscribe(key, options, link)
 
-      var results = getResults(queryData)
-      //console.log("To:", results.fetch())
-      return results
+      var result = getResult(queryData)
+
+      // If toRoomId is not already set, set it to the first
+      // available door. It will be reset each time the value of the 
+      // #fromRoomName select element is changed.
+      if (!Session.get("toRoomId").length) {
+        var fetched = result.fetch()
+        if (fetched.length > 0) {
+          Session.set("toRoomId", fetched[0].name)
+        }
+      }
+
+      //console.log("To:", result.fetch())
+      return result
     }
 
   , doorableRooms: function(){
-      var cursor = getResults(queries.roomsForNewDoors)
+      var cursor = getResult(queries.roomsForNewDoors)
       console.log("Doorable rooms")
       return !!cursor.count()
     }
@@ -258,7 +315,7 @@ if (Meteor.isClient) {
 
   Template.keyRooms.helpers({
     keyRooms: function(){
-      var cursor = getResults(queries.allRooms)
+      var cursor = getResult(queries.allRooms)
       return cursor
     }
   })
