@@ -152,11 +152,8 @@
     <label for="locked">{{locked}}</label>.
     {{#if isLocked}}
       <span>The key is in </span>
-      <select id="keyRoomName">
-        {{#each keyRooms}}
-          {{> keyRoom}}
-        {{/each}}
-      </select><span>.</span>
+        {{> keyRooms}}
+      <span>.</span>
     {{/if}}
 
     <button class="button" id="addDoor">Add Door</button>
@@ -170,6 +167,14 @@
 
 <template name="toRoom">
   <option value="{{name}}">{{name}}</option>
+</template>
+
+<template name="keyRooms">
+  <select id="keyRoomName">
+    {{#each keyRooms}}
+      {{> keyRoom}}
+    {{/each}}
+  </select>
 </template>
 
 <template name="keyRoom">
