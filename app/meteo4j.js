@@ -253,7 +253,7 @@ if (Meteor.isClient) {
     }
   })
 
-  Template.addDoor.helpers({
+  Template.entrance.helpers({
     fromRooms: function() {
       // Get a list of rooms not already linked to every other room
       var result = getResult(queries.roomsForNewDoors)
@@ -270,8 +270,11 @@ if (Meteor.isClient) {
       //console.log("From:",result.fetch())
       return result
     }
+  })
 
-  , toRooms: function () {
+
+  Template.exit.helpers({
+    toRooms: function () {
       var key = "newDoorsForRoom"
       var queryData = queries[key]
       var options = { fromRoomId: Session.get("fromRoomId") }
@@ -296,8 +299,11 @@ if (Meteor.isClient) {
       //console.log("To:", result.fetch())
       return result
     }
+  })
 
-  , doorableRooms: function(){
+
+  Template.addDoor.helpers({
+    doorableRooms: function(){
       var cursor = getResult(queries.roomsForNewDoors)
       console.log("Doorable rooms")
       return !!cursor.count()
