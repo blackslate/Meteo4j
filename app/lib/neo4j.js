@@ -15,4 +15,4 @@ Meteor.neo4j.connectionURL = 'http://neo4j:1234@localhost:7474'
   Here's the list of all actions:
     ["RETURN", "MATCH", "SKIP", "LIMIT", "OPTIONAL", "ORDER BY", "WITH", "AS", "WHERE", "CONSTRAINT", "UNWIND", "DISTINCT", "CASE", "WHEN", "THEN", "ELSE", "END", "CREATE", "UNIQUE", "MERGE", "SET", "DELETE", "REMOVE", "FOREACH", "ON", "INDEX", "USING", "DROP"]
 */
-//Meteor.neo4j.set.deny(Meteor.neo4j.rules.write)
+Meteor.neo4j.set.deny(Meteor.neo4j.rules.write)

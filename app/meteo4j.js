@@ -42,9 +42,10 @@ var queries = {
       "WHERE entrance.name = {fromRoomId} " +
       "AND exit.name = {toRoomId}  " +
       "CREATE entrance-[door:DOOR]->exit " +
-      "RETURN door" 
+      "RETURN door"
   , options: { fromRoomId: "", toRoomId: "" }
   , link: "door"
+  , manualSubscription: true
   }
 // , "lockDoor": {
 //     collection: Meteor.neo4j.collection("LockDoor")
@@ -58,7 +59,8 @@ var queries = {
 //       // Set lock on door, place key in room //
 //   , options: { _id: 1, keyRoom2: "Room A" }
 //   , link: "door"
-// }
+//   , manualSubscription: true
+//   }
 }
 
 
@@ -86,10 +88,10 @@ if (Meteor.isServer) {
 
 
   Meteor.neo4j.methods({
-    'addDoor': function(){
+    "addDoor": function(){
       var queryData = queries.addDoor
       var query = queryData.query
-      //console.log(query, this)
+      console.log(query, this)
       return query
     }
   });
@@ -105,10 +107,12 @@ if (Meteor.isClient) {
 
     function subscribe(key) { //, index, array){
       var queryData = queries[key]
-      var options = queryData.options
-      var link = queryData.link
-      var collection = queryData.collection
-      var subscription = collection.subscribe(key, options, link)
+      if (!queryData.manualSubscription) {
+        var options = queryData.options
+        var link = queryData.link
+        var collection = queryData.collection
+        var subscription = collection.subscribe(key, options, link)
+      }
     }
   })
 
@@ -155,72 +159,7 @@ if (Meteor.isClient) {
   })
 
   Template.addDoor.events({
-    'click #addDoor': function () {
-      var $from = $('#fromRoomName')
-      var $to = $('#toRoomName')
-      var $locked = $('#locked')
-      var $key = $('#keyRoomName')
-
-      var fromName = $from.val()
-      var toName = $to.val()
-      var keyName = $locked.checked ? $key.val() : null
-
-      var query = 
-      "MATCH (from:Room), (to:Room)" +
-      " WHERE from.name = '" + fromName + "'" +
-      " AND to.name = '" + toName + "'" +
-      " CREATE (from)-[door:DOOR"
-
-      if ($locked.attr("checked")) {
-        query += " {lock: '" + toName+ "'}"
-      }
-      
-      query += "]->(to)" +
-      " RETURN from, door, to"
-
-      if(fromName){
-        if(toName){
-          Meteor.neo4j.query(query, null, doorAdded)
-        }
-      }
-
-      function doorAdded(error, data){
-        //console.log("doorAdded: ", error, data)
-        // { door: [ {
-        //     lock: "Room 2"
-        //   , metadata: {
-        //       id: 7
-        //     , type: "DOOR"
-        //     }
-        //   , relation: {
-        //       end: "87"
-        //     , extensions: {}
-        //     , self: "7"
-        //     , start: "86"
-        //     , type: "DOOR"
-        //     }
-        //   } ]
-        // , [ { _id: "gaDMbc6KpmpGwyzTS"
-        //     , keys: []
-        //     , metadata: {
-        //         id: 86
-        //       , labels: ["Room"]
-        //       }
-        //     , name: "Room 1"
-        //     }]
-        // , [ { _id: ""d6TJWJ3jBtKMfYgLX""
-        //     , keys: []
-        //     , metadata: {
-        //         id: 86
-        //       , labels: ["Room"]
-        //       }
-        //     , name: "Room 2"
-        //     }]
-        // }
-      }
-    }
-
-  , 'change #fromRoomName': function () {
+    'change #fromRoomName': function () {
       var fromRoomId = $("#fromRoomName :selected").text()
       //console.log("From:", fromRoomId)
       Session.set("fromRoomId", fromRoomId)
@@ -240,8 +179,12 @@ if (Meteor.isClient) {
       var options = {}
       options.fromRoomId = Session.get("fromRoomId")
       options.toRoomId = Session.get("toRoomId")
-      options.keyRoom = Session.get("keyRoom")
-      Meteor.neo4j.call('addDoor', options);
+      //options.keyRoom = Session.get("keyRoom")
+      Meteor.neo4j.call("addDoor", options, callback)
+
+      function callback(error, data, a, b, c) {
+        console.log("Add Door callback", error, data, a, b, c)
+      }
     }
   })
 
@@ -338,6 +281,15 @@ if (Meteor.isClient) {
   Template.keyRooms.helpers({
     keyRooms: function(){
       var cursor = getResult(queries.allRooms)
+      var fetched = cursor.fetch()
+      var keyRoom = Session.get("keyRoom")
+
+      if (!keyRoom) {
+        if (fetched.length) {
+          keyRoom = fetched[0].name
+          Session.set("keyRoom", keyRoom)
+        }
+      }
       return cursor
     }
   })
