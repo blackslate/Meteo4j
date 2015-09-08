@@ -230,13 +230,13 @@ if (Meteor.isClient) {
 
   , 'change #fromRoomName': function () {
       var fromRoomId = $("#fromRoomName :selected").text()
-      console.log("From:", fromRoomId)
+      //console.log("From:", fromRoomId)
       Session.set("fromRoomId", fromRoomId)
     }
 
  , 'change #toRoomName': function () {
       var toRoomId = $("#toRoomName :selected").text()
-      console.log("To:", toRoomId)
+      //console.log("To:", toRoomId)
       Session.set("toRoomId", toRoomId)
     }
 
@@ -267,6 +267,7 @@ if (Meteor.isClient) {
           Session.set("fromRoomId", fetched[0].name)
         }
       }
+
       //console.log("From:",result.fetch())
       return result
     }
@@ -285,18 +286,14 @@ if (Meteor.isClient) {
       collection.subscribe(key, options, link)
 
       var result = getResult(queryData)
-
       // If toRoomId is not already set, set it to the first
       // available door. It will be reset each time the value of the 
       // #fromRoomName select element is changed.
-      if (!Session.get("toRoomId").length) {
-        var fetched = result.fetch()
-        if (fetched.length > 0) {
-          Session.set("toRoomId", fetched[0].name)
-        }
+      var fetched = result.fetch()
+      if (fetched.length > 0) {
+        setToRoomId(fetched[0].name) // current value takes priority
       }
-
-      //console.log("To:", result.fetch())
+ 
       return result
     }
   })
@@ -344,4 +341,18 @@ if (Meteor.isClient) {
     // http://stackoverflow.com/a/496126/1927589
   })
   
+  function setToRoomId(value) {
+    var toRoomId = $("#toRoomName :selected").text()
+      
+    if (!toRoomId) {
+      // This will be the case on first launch
+      toRoomId = value
+      $("#toRoomId option").filter(function() {
+        return $(this).text() === toRoomId
+      }).prop('selected', true);
+    }
+
+    Session.set("toRoomId", toRoomId)
+    //console.log("To:", toRoomId)
+  }
 }
