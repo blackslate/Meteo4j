@@ -43,7 +43,7 @@ var queries = {
       "AND exit.name = {toRoomId}  " +
       "CREATE entrance-[door:DOOR]->exit " +
       "RETURN door" 
-  , options: { fromRoomId: "Room A", toRoomId: "Room B" }
+  , options: { fromRoomId: "", toRoomId: "" }
   , link: "door"
   }
 // , "lockDoor": {
@@ -70,7 +70,7 @@ if (Meteor.isServer) {
     queryKeys.forEach(publish)
 
     function publish(key) { //, index, array){
-      // console.log(key, queries[key])
+      //console.log(key, queries[key])
 
       var queryData = queries[key]
       var query = queryData.query
@@ -89,7 +89,7 @@ if (Meteor.isServer) {
     'addDoor': function(){
       var queryData = queries.addDoor
       var query = queryData.query
-      console.log(query, this)
+      //console.log(query, this)
       return query
     }
   });
@@ -137,20 +137,12 @@ if (Meteor.isClient) {
   })
 
   Template.addRoom.events({
-    'click #addRoom': function () {
-      var collection = queries.allRooms.collection
-      var $input = $('#newRoomName')
-      var roomName = $input.val()
-
-      if(roomName){
-        collection.insert({
-          name: roomName,
-          keys: [],
-          __labels: ':Room'
-        });
-        $input.val('');
+    'click #addRoom': addRoom
+  , 'keypress #newRoomName': function (event) {
+      if (event.keyCode === 13) {
+        addRoom()
       }
-    }
+    } 
   })
 
   Template.addDoor.onRendered (function () {
@@ -159,7 +151,7 @@ if (Meteor.isClient) {
     var toRoomId = $("#toRoomName :selected").text()
     Session.set("toRoomId", toRoomId)
 
-    console.log("addDoor rendered", fromRoomId, toRoomId)
+    //console.log("addDoor rendered", fromRoomId, toRoomId)
   })
 
   Template.addDoor.events({
@@ -193,7 +185,7 @@ if (Meteor.isClient) {
       }
 
       function doorAdded(error, data){
-        console.log("doorAdded: ", error, data)
+        //console.log("doorAdded: ", error, data)
         // { door: [ {
         //     lock: "Room 2"
         //   , metadata: {
@@ -257,19 +249,46 @@ if (Meteor.isClient) {
     fromRooms: function() {
       // Get a list of rooms not already linked to every other room
       var result = getResult(queries.roomsForNewDoors)
+      var fromRoomId = Session.get("fromRoomId") // may be ""
+      var fetched = result.fetch()
 
-      // If fromRoomId is not already set, set it to the first
-      // available door. It will be reset each time the value of the 
-      // #fromRoomName select element is changed.
-      if (!Session.get("fromRoomId").length) {
-        var fetched = result.fetch()
+      if (!fromRoomId.length) {
+        // If fromRoomId is not already set, set it to the first
+        // available door. It will be reset each time the value of  
+        // the #fromRoomName select element is changed.
+    
         if (fetched.length > 0) {
           Session.set("fromRoomId", fetched[0].name)
         }
+      } else {
+        // If the user has just created the last possible door for the
+        // current room, then `fromRoomId` will no longer appear in
+        // the list of room names.
+        changeRoomIfFull(fromRoomId, fetched)
       }
 
       //console.log("From:",result.fetch())
       return result
+
+      function changeRoomIfFull(fromRoomId, fetched) {
+        var fromRoomMissing = fetched.every(function (element) {
+          return (element.name !== fromRoomId)
+          // If fromRoomId is present in fetched, then fromRoomMissing
+          // will be set to `false` and this anonymous function will
+          // not be called again. Otherwise, this function will be
+          // called for each element, and will return `true`.
+        })
+
+        if (fromRoomMissing) {
+          fromRoomId = fetched[0].name
+          Session.set("fromRoomId", fromRoomId)
+
+          // Select this new item in the popup menu
+          $("#fromRoomId option").filter(function() {
+            return $(this).text() === fromRoomId
+          }).prop('selected', true);
+        }
+      }
     }
   })
 
@@ -302,7 +321,7 @@ if (Meteor.isClient) {
   Template.addDoor.helpers({
     doorableRooms: function(){
       var cursor = getResult(queries.roomsForNewDoors)
-      console.log("Doorable rooms")
+      //console.log("Doorable rooms")
       return !!cursor.count()
     }
 
@@ -340,6 +359,22 @@ if (Meteor.isClient) {
 
     // http://stackoverflow.com/a/496126/1927589
   })
+
+
+  function addRoom() {
+    var collection = queries.allRooms.collection
+    var $input = $('#newRoomName')
+    var roomName = $input.val()
+
+    if(roomName){
+      collection.insert({
+        name: roomName,
+        keys: [],
+        __labels: ':Room'
+      });
+      $input.val('');
+    }
+  }
   
   function setToRoomId(value) {
     var toRoomId = $("#toRoomName :selected").text()
