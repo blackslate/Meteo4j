@@ -32,6 +32,7 @@
 <li><a href="#create-node">Creating a node</a></li>
 <li><a href="#subscribe">Publish and subscribe</a></li>
 <li><a href="#template">Showing the nodes</a></li>
+<li><a href="#on-the-fly">Adding nodes</a></li>
 <li><a href="#relations">Links between nodes</a></li>
 <li></li>
 </ul>
@@ -608,8 +609,20 @@ if (Meteor.isClient) {
 <p class="aside disrupt">To see if you have understood, make a small modification to both the HTML file and the JavaScript file, so that it shows the <code>id</code> of the "Start" node, rather than its label.</p>
 </section>
 <section>
+<h2><a id="on-the-fly" class="anchor" href="#on-the-fly" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding nodes on-the-fly in the browser</h2>
+<p>The aim of this tutorial is to create a maze of rooms with doors. Some doors are locked and some rooms contain keys. In this section, I'll show you how to create a form to allow you to:</p>
+<ul>
+<li>Create a new room</li>
+<li>Create a door between two rooms</li>
+<li>Lock a door</li>
+<li>Hide a key for a given door in a given room</li>
+</ul>
+<p>I won't make any attempt yet to arrange the rooms in 2D space, because that will require a bunch of code that is not directly related to Neo4j. For now, it will be enough to create lists of rooms, doors and keys.</p>
+</section>
+<section>
 <h2><a id="relations" class="anchor" href="#relations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating links between nodes</h2>
-<p></p>
+<p>You've seen how to create a node with a property and a label, and how to display it in the browser. But the real power of Neo4j is its ability to create relationships between nodes and to describe those relationships, and to search for nodes and relationship that match a particular pattern.</p>
+<p>In this next step, I'll show you how to create a button that will  </p>
 </section>
 </article>
 </body>
